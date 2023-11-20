@@ -1,5 +1,5 @@
 # redborder-serverspec-manager
-Tests redborder-manager
+Infrastructure integration testing for redborder-manager
 
 # Basic documentation
 https://serverspec.org/
