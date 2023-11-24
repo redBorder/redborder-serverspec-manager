@@ -34,3 +34,20 @@ To view the list of available Rake tasks, use the following command:
 rake -T
 ```
 
+## Developing tests
+
+On creating a new test, is important to follow the Rakefile structure as the directory structure.
+
+Directory structure:
+
+└── spec/
+    ├── spec_helper.rb
+    │
+    ├── services/
+    │   ├── ... > PUT YOUR TESTS HERE
+    │
+    ├── configuration/
+    │   ├── ... > OR HERE
+    │
+    └── helpers/
+        ├── ...         
