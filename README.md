@@ -17,6 +17,7 @@ Optional parameters:
 * TARGET_HOST: Machine where the tests will run via SSH.
 * LOGIN_USERNAME: Username for SSH connection to the test machine.
 * LOGIN_PASSWORD: Password for SSH connection to the test machine.
+* -j 10 -m: To run tests in pararell
 Example with optional parameters:
 ```
 TARGET_HOST="10.1.209.50" LOGIN_USERNAME="root" LOGIN_PASSWORD="redborder" rake spec
