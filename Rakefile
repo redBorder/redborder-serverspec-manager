@@ -3,19 +3,6 @@ require 'rspec/core/rake_task'
 
 task :default => :spec
 
-task :debug => "debug:targets"
-namespace :debug do
-    desc 'a debug task to show what targets are found'
-    task :targets do
-        targets = []
-        Dir.glob('spec/**/*_spec.rb').each do |file|
-            host = /(.*)_spec.rb/.match(File.basename(file))[1]
-            targets << host
-        end
-        puts targets
-    end
-end
-
 task :spec => "spec:all"
 namespace :spec do
     host = ENV['TARGET_HOST'] || '10.1.209.20'
