@@ -5,7 +5,6 @@ end
 
 describe file("/etc/redborder-monitor/config.json") do
   it { should exist }
-  # Puedes añadir más verificaciones para el archivo de configuración aquí
 end
 
 describe service("kafka") do
@@ -19,7 +18,6 @@ end
 describe command("rb_get_topics | grep monitor") do
   its(:stdout) { should match /rb_monitor/ }
   its(:stdout) { should match /rb_monitor_post/ }
-  # Añade aquí más matches para otros topics específicos que necesites verificar
 end
 
 describe file("/etc/logstash/pipelines/monitor/00_input.conf") do
@@ -41,14 +39,12 @@ end
 
 describe file("/etc/druid/realtime/rb_realtime.spec") do
   it { should exist }
-  # Añade aquí verificaciones específicas para el contenido del archivo
 end
 
 describe command("ls /tmp/realtime/rb_monitor") do
   its(:exit_status) { should eq 0 }
 end
 
-# Nota: Ejecutar estos comandos puede ser más complejo y depende del entorno
 describe command("timeout 3 rb_consumer.sh -t rb_monitor_post") do
   its(:stdout) { should match(/"organization_uuid":"\*"/) }
   its(:stdout) { should match(/"timestamp":\d+/) }
