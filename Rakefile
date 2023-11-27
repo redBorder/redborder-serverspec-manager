@@ -35,9 +35,10 @@ namespace :spec do
     t.pattern = "spec/services/*_spec.rb"
     t.rspec_opts = "--format documentation"  # O "--format progress"
   end
-  desc "rrun monitor test"
+
+  desc "run monitor test"
   RSpec::Core::RakeTask.new(:services) do |t|
-    puts "Running service tests on #{host} ..."
+    puts "Running Monitor tests on #{host} ..."
     t.pattern = "spec/modules/monitor/*_spec.rb"
     t.rspec_opts = "--format documentation"  # O "--format progress"
   end

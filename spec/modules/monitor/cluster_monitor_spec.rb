@@ -50,9 +50,9 @@ end
 
 # Nota: Ejecutar estos comandos puede ser más complejo y depende del entorno
 describe command("timeout 3 rb_consumer.sh -t rb_monitor_post") do
-  its(:exit_status) { should eq 0 }
-end
-
-describe command("rb_consumer.sh -t rb_monitor_post_<namespace>") do
-  its(:exit_status) { should eq 0 }
+  its(:stdout) { should match(/"organization_uuid":"\*"/) }
+  its(:stdout) { should match(/"timestamp":\d+/) }
+  its(:stdout) { should match(/"monitor":"organization_received_bytes"/) }
+  its(:stdout) { should match(/"unit":"bytes"/) }
+  its(:stdout) { should match(/"value":\d+/) }
 end
