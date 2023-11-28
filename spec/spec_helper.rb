@@ -1,35 +1,26 @@
 require 'serverspec'
 require 'net/ssh'
+require 'tempfile'
+require 'highline/import'
 
 set :backend, :ssh
+set :disable_sudo, true
+set :path, '/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin'
 
-if ENV['ASK_SUDO_PASSWORD']
-  begin
-    require 'highline/import'
-  rescue LoadError
-    fail "highline is not available. Try installing it."
-  end
-  set :sudo_password, ask("Enter sudo password: ") { |q| q.echo = false }
-else
-  set :sudo_password, ENV['SUDO_PASSWORD']
-end
-
+# ssh setup
 host = ENV['TARGET_HOST']
-
 options = Net::SSH::Config.for(host)
+set :host, options[:host_name] || host
+options[:user] ||= ENV['LOGIN_USERNAME'] || 'root'
 
-options[:user] ||= "root"
-
-set :backend, :ssh
-set :host,        options[:host_name] || host
+if ENV['ASK_LOGIN_PASSWORD']
+    options[:password] = ask("\nEnter login password: ") { |q| q.echo = false }
+else
+    options[:password] = ENV['LOGIN_PASSWORD'] || 'redborder'
+end
+  
 set :ssh_options, options
 
-# Disable sudo
-# set :disable_sudo, true
 
 
-# Set environment variables
-# set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
-# Set PATH
-# set :path, '/sbin:/usr/local/sbin:$PATH'

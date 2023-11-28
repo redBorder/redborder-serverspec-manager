@@ -1,27 +1,25 @@
 require 'rake'
 require 'rspec/core/rake_task'
 
-task :spec    => 'spec:all'
 task :default => :spec
 
+task :spec => "spec:all"
 namespace :spec do
-  targets = []
-  Dir.glob('./spec/*').each do |dir|
-    next unless File.directory?(dir)
-    target = File.basename(dir)
-    target = "_#{target}" if target == "default"
-    targets << target
-  end
+    host = ENV['TARGET_HOST'] || '10.1.209.20'
 
-  task :all     => targets
-  task :default => :all
+    task :all => [:services, :configuration]
 
-  targets.each do |target|
-    original_target = target == "_default" ? target[1..-1] : target
-    desc "Run serverspec tests to #{original_target}"
-    RSpec::Core::RakeTask.new(target.to_sym) do |t|
-      ENV['TARGET_HOST'] = original_target
-      t.pattern = "spec/#{original_target}/*_spec.rb"
+    desc 'run configuration tests'
+    RSpec::Core::RakeTask.new(:configuration) do |t|
+        puts "Running configuration tests on #{host} ..."
+        t.pattern = "spec/configuration/*_spec.rb"
+        t.rspec_opts = "--format documentation"  # O "--format progress"
     end
-  end
+
+    desc 'run service tests'
+    RSpec::Core::RakeTask.new(:services) do |t|
+        puts "Running service tests on #{host} ..."
+        t.pattern = "spec/services/*_spec.rb"
+        t.rspec_opts = "--format documentation"  # O "--format progress"
+    end
 end
