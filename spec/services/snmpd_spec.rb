@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
-set :os, :family => 'redhat', :release => '9', :arch => 'x86_64'
+set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 describe 'Checking net-snmp' do
   describe package('net-snmp') do
