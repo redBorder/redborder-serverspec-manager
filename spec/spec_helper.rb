@@ -7,7 +7,6 @@ require 'highline/import'
 
 set :backend, :ssh
 set :disable_sudo, true
-set :path, '/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin'
 
 # ssh setup
 host = ENV['TARGET_HOST'] || '10.1.209.20'
