@@ -4,9 +4,9 @@ require "rspec/core/rake_task"
 task :default => :spec
 
 task :spec => "spec:all"
+
 namespace :spec do
   host = ENV["TARGET_HOST"] || "10.1.209.20"
-
   task :all => [:services, :configuration]
 
   desc "run configuration tests"
@@ -29,4 +29,5 @@ namespace :spec do
     t.pattern = "spec/modules/monitor/*_spec.rb"
     t.rspec_opts = "--format documentation"  # O "--format progress"
   end
+
 end
