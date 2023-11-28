@@ -10,7 +10,7 @@ set :disable_sudo, true
 set :path, '/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/sbin'
 
 # ssh setup
-host = ENV['TARGET_HOST']
+host = ENV['TARGET_HOST'] || '10.1.209.20'
 options = Net::SSH::Config.for(host)
 set :host, options[:host_name] || host
 options[:user] ||= ENV['LOGIN_USERNAME'] || 'root'

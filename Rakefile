@@ -4,7 +4,9 @@ require 'rspec/core/rake_task'
 task :default => :spec
 
 task :spec => "spec:all"
+
 namespace :spec do
+  # TODO: multiple hosts
     host = ENV['TARGET_HOST'] || '10.1.209.20'
 
     task :all => [:services, :configuration]
