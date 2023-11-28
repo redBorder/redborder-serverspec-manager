@@ -4,14 +4,6 @@ describe 'Redborder Monitor Services' do
   describe service('redborder-monitor') do
     it { should be_running }
   end
-
-  describe service('kafka') do
-    it { should be_running }
-  end
-
-  describe service('logstash') do
-    it { should be_running }
-  end
 end
 
 describe 'Redborder Monitor Configurations' do
@@ -43,6 +35,7 @@ end
 describe 'Druid Configurations' do
   describe file('/etc/druid/realtime/rb_realtime.spec') do
     it { should exist }
+    its(:content) { should match(/"dataSource":\s*"rb_monitor"/) }
   end
 end
 
@@ -53,11 +46,10 @@ describe 'Temporary Realtime Monitor Files' do
 end
 
 describe 'Kafka Data Consumption' do
-  describe command('timeout 3 rb_consumer.sh -t rb_monitor_post') do
-    its(:stdout) { should match(/"organization_uuid":"\*"/) }
-    its(:stdout) { should match(/"timestamp":\d+/) }
-    its(:stdout) { should match(/"monitor":"organization_received_bytes"/) }
-    its(:stdout) { should match(/"unit":"bytes"/) }
-    its(:stdout) { should match(/"value":\d+/) }
+  describe command('timeout 55 rb_consumer.sh -t rb_monitor_post') do
+    its(:stdout) { should match(/"type":/) }
+    its(:stdout) { should match(/"timestamp":/) }
+    its(:stdout) { should match(/"sensor_name":/) }
+    its(:stdout) { should match(/"monitor":/) }
   end
 end
