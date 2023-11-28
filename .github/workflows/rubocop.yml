@@ -12,4 +12,4 @@ jobs:
           ruby-version: 2.7
           bundler-cache: true
       - name: Run rubocop
-        run: rubocop spec
+        run: bundle exec rubocop spec
