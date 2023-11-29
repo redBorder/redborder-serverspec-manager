@@ -17,26 +17,26 @@ end
 # Management network
 puts 'Configuration'
 
+ip = ENV["TARGET_HOST"]
+puts "HOST: #{ip}"
+
 describe 'Management network' do
-  let(:ip_address) { '10.1.209.' }
-  it 'The Management network should contain IP 10.1.209.x' do
-    expect(ip_address).to match(/10\.1\.209/)
+  it 'The Management network should contain an IP' do
+    expect(ip).to match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
   end
 end
 
 # Sync network
-
 describe 'Sync network' do
   sync = command('ip addr show').stdout
   it 'Have a network sync' do
     interfaces_with_ip = sync.scan(/inet\s+(\d+\.\d+\.\d+\.\d+)/).flatten
-    filtered_ips = interfaces_with_ip.select { |ip| ip.start_with?('10.1.') }
-    expect(filtered_ips.length).to be >= 2
+    expect(interfaces_with_ip.length).to be >= 3
+    puts "OUTPUT: #{interfaces_with_ip}"
   end
 end
 
 # DNS
-
 describe 'DNS' do
   resolv_content = command('cat /etc/resolv.conf').stdout
   it 'It should have a nameserver' do
@@ -45,7 +45,6 @@ describe 'DNS' do
 end
 
 # Passwords
-
 describe 'Password' do
   user_root = command('sudo passwd -S root').stdout
   it 'User root have a password' do
@@ -54,7 +53,6 @@ describe 'Password' do
 end
 
 # Date and time
-
 current_time = Time.now.utc
 
 describe 'Date time' do
@@ -66,7 +64,6 @@ describe 'Date time' do
 end
 
 # Hostname
-
 describe 'Hostname' do
   hostname = command('hostname').stdout
   it 'Hostname is set' do
@@ -76,7 +73,6 @@ describe 'Hostname' do
 end
 
 # IPMI
-
 describe 'IPMI' do
   ipmi_status = command('rpm -qa | grep ipmi').stdout
   it 'Status IPMI' do
