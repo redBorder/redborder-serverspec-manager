@@ -17,7 +17,7 @@ end
 # Management network
 puts 'Configuration'
 
-ip = ENV["TARGET_HOST"]
+ip = ENV['TARGET_HOST']
 puts "HOST: #{ip}"
 
 describe 'Management network' do
