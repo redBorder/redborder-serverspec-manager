@@ -3,7 +3,6 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-
 interfaces = command('ip link show | grep "^[0-9]" | cut -d" " -f2 | sed "s/:$//"').stdout.split("\n")
 
 describe 'All interfaces: ' do
@@ -61,8 +60,8 @@ current_time = Time.now.utc
 describe 'Date time' do
   date_time = command('date -u "+%a %b %e %H:%M %Z %Y"').stdout
   it 'Current date and time in utc' do
-  expect(date_time).to include(current_time.strftime('%a %b %e %H:%M %Z %Y').to_s)
-  puts "OUTPUT: #{date_time}"
+    expect(date_time).to include(current_time.strftime('%a %b %e %H:%M %Z %Y').to_s)
+    puts "OUTPUT: #{date_time}"
   end
 end
 
