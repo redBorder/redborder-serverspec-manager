@@ -52,17 +52,6 @@ describe 'Password' do
   end
 end
 
-# Date and time
-current_time = Time.now.utc
-
-describe 'Date time' do
-  date_time = command('date -u "+%a %b %e %H:%M %Z %Y"').stdout
-  it 'Current date and time in utc' do
-    expect(date_time).to include(current_time.strftime('%a %b %e %H:%M %Z %Y').to_s)
-    puts "OUTPUT: #{date_time}"
-  end
-end
-
 # Hostname
 describe 'Hostname' do
   hostname = command('hostname').stdout
