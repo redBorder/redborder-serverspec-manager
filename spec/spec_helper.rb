@@ -18,7 +18,7 @@ if ENV['ASK_LOGIN_PASSWORD']
 else
     options[:password] = ENV['LOGIN_PASSWORD'] || 'redborder'
 end
-  
+
 set :ssh_options, options
 
 
