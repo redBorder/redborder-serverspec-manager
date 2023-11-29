@@ -84,4 +84,3 @@ describe 'IPMI' do
     expect(ipmi_status).to include('ipmi')
   end
 end
-
