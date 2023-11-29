@@ -7,7 +7,7 @@ packages = %w[
   redborder-druid cookbook-druid druid
 ]
 
-describe 'Checking Druid Historical Service' do
+describe 'Checking Druid Historical Service - Basic Checks' do
   packages.each do |package|
     describe package(package) do
       it { should be_installed }
@@ -24,7 +24,9 @@ describe 'Checking Druid Historical Service' do
       it { should exist }
     end
   end
+end
 
+describe 'Checking Druid Historical Service - Advanced Checks' do
   describe 'System Dependencies' do
     describe package('java-1.8.0-openjdk') do
       it { should be_installed }
