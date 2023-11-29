@@ -1,5 +1,5 @@
 require 'spec_helper'
-set :os, :family => 'redhat', :release => '9', :arch => 'x86_64'
+set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 describe service('zookeeper') do
   it 'Should the Zookeeper package be installed' do
@@ -13,5 +13,4 @@ describe service('zookeeper') do
   it 'Should it be listening on port 2181' do
     expect(port(2181)).to be_listening
   end
-
 end
