@@ -30,4 +30,10 @@ namespace :spec do
     t.rspec_opts = "--format documentation"  # O "--format progress"
   end
 
+  desc 'run zookeper tests'
+  RSpec::Core::RakeTask.new(:zookeeper) do |t|
+      puts "Running zookeeper tests on #{host} ..."
+      t.pattern = "spec/services/zookeeper_spec.rb"
+      t.rspec_opts = "--format documentation"  # O "--format progress"
+  end
 end
