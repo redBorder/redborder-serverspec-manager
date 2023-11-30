@@ -4,7 +4,9 @@ require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 describe service('zookeeper') do
-  it { should be_installed }
+  describe package('zookeeper') do
+    it { should be_installed }
+  end
   it { should be_enabled }
   it { should be_running }
 
