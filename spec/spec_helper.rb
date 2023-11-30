@@ -3,7 +3,6 @@
 require 'serverspec'
 require 'net/ssh'
 require 'tempfile'
-require 'highline/import'
 
 set :backend, :ssh
 set :disable_sudo, true
