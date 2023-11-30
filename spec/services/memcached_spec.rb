@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-set :os, family: 'redhat', release: '7', arch: 'x86_64'
+set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 describe 'Checking Memcached Service - Basic Checks' do
   # Verifies the installation of the Memcached package.
