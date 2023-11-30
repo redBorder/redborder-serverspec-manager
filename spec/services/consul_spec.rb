@@ -25,8 +25,8 @@ describe 'Checking consul' do
   end
 
   describe 'Registered in consul' do
-    service_json = command("curl -s http://localhost:8500/v1/catalog/service/erchef | jq -r '.[]'").stdout
-    health = command("curl -s http://localhost:8500/v1/health/service/erchef | jq -r '.[].Checks[0].Status'").stdout
+    service_json = command("curl -s http://localhost:8500/v1/catalog/service/consul | jq -r '.[]'").stdout
+    health = command("curl -s http://localhost:8500/v1/health/service/consul | jq -r '.[].Checks[0].Status'").stdout
     health = health.strip
     registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
     it do
