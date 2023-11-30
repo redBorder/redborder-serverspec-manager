@@ -27,17 +27,14 @@ describe 'Checking chef...' do
   describe port(4443) do
     it { should be_listening }
   end
-end
 
-describe 'Registered in consul and enabled' do
-  service_name = 'erchef'
-  response = "curl -s http://localhost:8500/v1/catalog/service/#{service_name} | jq -r '.[].Address'"
-  health = "curl -s http://localhost:8500/v1/health/service/#{service_name} | jq -r '.[].Checks' | jq -r '.[].Status'"
-  ips = command(response).stdout.split("\n")
-  service_health = command(health).stdout.split("\n")
-  it 'Should be registered and enabled' do
-    expect(ips).not_to be_empty
-    passing_checks = service_health.to_s.chomp
-    expect(passing_checks).to include('passing')
+  describe 'Registered in consul' do
+    service_json = command("curl -s http://localhost:8500/v1/catalog/service/erchef | jq -r '.[]'").stdout
+    health = command("curl -s http://localhost:8500/v1/health/service/erchef | jq -r '.[].Checks[0].Status'").stdout
+    health = health.strip
+    registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
+    it do
+      expect(registered).to be true
+    end
   end
 end
