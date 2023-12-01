@@ -40,7 +40,7 @@ if service_status == 'enabled'
   end
 end
 
-if service_status == 'disabled' 
+if service_status == 'disabled'
   describe "Checking #{service_status} service for #{service}..." do
     describe service(service) do
       it { should_not be_enabled }
