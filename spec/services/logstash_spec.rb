@@ -13,11 +13,9 @@ describe "Checking #{service}..." do
   packages.each do |package|
     describe package(package) do
       before do
-        unless package(package).installed?
-          skip("#{package} is not installed, skipping...")
-        end
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
       end
-  
+
       it 'is expected to be installed' do
         expect(package(package).installed?).to be true
       end
@@ -41,7 +39,7 @@ describe "Checking #{service}..." do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-  
+
     describe port(8300) do
       it { should_not be_listening }
     end

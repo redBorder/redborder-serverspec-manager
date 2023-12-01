@@ -14,9 +14,7 @@ describe "Checking #{service}..." do
   packages.each do |package|
     describe package(package) do
       before do
-        unless package(package).installed?
-          skip("#{package} is not installed, skipping...")
-        end
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
       end
 
       it 'is expected to be installed' do
@@ -24,7 +22,7 @@ describe "Checking #{service}..." do
       end
     end
   end
-  
+
   service_status = command("systemctl is-enabled #{service}").stdout
   service_status = service_status.strip
 
@@ -33,7 +31,7 @@ describe "Checking #{service}..." do
       it { should be_enabled }
       it { should be_running }
     end
-  
+
     describe port(199) do
       it { should be_listening }
     end
@@ -42,7 +40,7 @@ describe "Checking #{service}..." do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-  
+
     describe port(8300) do
       it { should_not be_listening }
     end

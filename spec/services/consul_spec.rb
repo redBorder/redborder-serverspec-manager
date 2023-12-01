@@ -14,17 +14,15 @@ describe "Checking #{service}..." do
   packages.each do |package|
     describe package(package) do
       before do
-        unless package(package).installed?
-          skip("#{package} is not installed, skipping...")
-        end
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
       end
-  
+
       it 'is expected to be installed' do
         expect(package(package).installed?).to be true
       end
     end
   end
-  
+
   service_status = command("systemctl is-enabled #{service}").stdout
   service_status = service_status.strip
 
@@ -33,11 +31,11 @@ describe "Checking #{service}..." do
       it { should be_enabled }
       it { should be_running }
     end
-  
+
     describe port(8300) do
       it { should be_listening }
     end
-  
+
     describe 'Registered in consul' do
       api_endpoint = 'http://localhost:8500/v1'
       service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
@@ -53,7 +51,7 @@ describe "Checking #{service}..." do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-  
+
     describe port(8300) do
       it { should_not be_listening }
     end
