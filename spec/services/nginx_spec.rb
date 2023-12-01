@@ -5,7 +5,7 @@ require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
-  nginx
+  nginx cookbook-nginx
 ]
 
 service = 'nginx'
