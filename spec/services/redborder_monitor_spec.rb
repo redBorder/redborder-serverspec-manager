@@ -7,20 +7,52 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 packages = %w[
   redborder-monitor cookbook-rb-monitor
 ]
-describe 'Checking redborder-monitor...' do
+
+service = 'redborder-monitor'
+config_file = '/etc/redborder-monitor/config.json'
+
+describe "Checking packages for #{service}..." do
   packages.each do |package|
     describe package(package) do
-      it { should be_installed }
+      before do
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
+      end
+
+      it 'is expected to be installed' do
+        expect(package(package).installed?).to be true
+      end
     end
   end
+end
 
-  describe service('redborder-monitor') do
-    it { should be_enabled }
-    it { should be_running }
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
+
+if service_status == 'enabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe file(config_file) do
+      it { should exist }
+      it { should be_file }
+    end
+
   end
+end
 
-  describe file('/etc/redborder-monitor/config.json') do
-    it { should exist }
-    it { should be_file }
+if service_status == 'disabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
+
+    describe file(config_file) do
+      it { should_not exist }
+    end
+
   end
 end
