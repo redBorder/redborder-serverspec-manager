@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
@@ -9,8 +8,9 @@ packages = %w[
 ]
 
 service = 'snmpd'
+port = 199
 
-describe "Checking #{service}..." do
+describe "Checking packages for #{service}..." do
   packages.each do |package|
     describe package(package) do
       before do
@@ -22,26 +22,32 @@ describe "Checking #{service}..." do
       end
     end
   end
+end
 
-  service_status = command("systemctl is-enabled #{service}").stdout
-  service_status = service_status.strip
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
 
-  if service_status == 'enabled'
+if service_status == 'enabled'
+  describe "Checking #{service_status} service for #{service}..." do
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
     end
 
-    describe port(199) do
+    describe port(port) do
       it { should be_listening }
     end
-  else # if service disabled
+  end
+end
+
+if service_status == 'disabled' 
+  describe "Checking #{service_status} service for #{service}..." do
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
     end
 
-    describe port(8300) do
+    describe port(port) do
       it { should_not be_listening }
     end
   end
