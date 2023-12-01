@@ -39,7 +39,7 @@ rake -T
 On creating a new test, is important to follow the Rakefile structure as the directory structure.
 
 Directory structure:
-
+```
 └── spec/
     ├── spec_helper.rb
     │
@@ -51,3 +51,4 @@ Directory structure:
     │
     └── helpers/
         ├── ...         
+```
