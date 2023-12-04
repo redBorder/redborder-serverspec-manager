@@ -17,7 +17,7 @@ describe 'Cluster Nodes' do
   describe command('serf members | grep -c "alive"') do 
     it 'There are at least 3 alive nodes' do
       n_nodes = subject.stdout.to_i
-      expect(n_nodes).to be > 2
+      expect(n_nodes).to be >= 3
     end
   end
 end
@@ -25,6 +25,11 @@ end
 describe 'Reachable nodes' do
   describe command('serf members | awk \'{split($2, a, ":"); print a[1]}\'') do
     its(:exit_status) { should eq 0 }
+
+    it 'Has at least 3 target IPs' do
+      expect(target_ips.length).to be >= 3
+    end
+
     it 'Main host can reach every node' do
       target_ips = subject.stdout.chomp.split("\n")
       target_ips.each do |target_ip|
@@ -33,3 +38,4 @@ describe 'Reachable nodes' do
     end
   end
 end
+
