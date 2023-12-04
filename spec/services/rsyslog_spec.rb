@@ -10,8 +10,8 @@ packages = %w[
 
 service = 'rsyslog'
 config_directory = '/etc/rsyslog.d/'
-files = %w[ 
-  01-server.conf 02-general.conf 20-redborder.conf 99-parse_rfc5424.conf 
+files = %w[
+  01-server.conf 02-general.conf 20-redborder.conf 99-parse_rfc5424.conf
 ]
 port = 514
 
@@ -39,15 +39,17 @@ if service_status == 'enabled'
       it { should be_running }
     end
 
-    describe file(config_directory) do
-      it { should exist }
-      it { should be_directory }
-    end
-
-    files.each do |file|
-      describe file("#{config_directory}/#{file}") do
-        it { should exist }
-        it { should be_file }
+    describe "Configuration files and directories" do
+      [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
+        describe file(file_path) do
+          it { should exist }
+          
+          if File.directory?(file_path)
+            it { should be_directory }
+          else
+            it { should be_file }
+          end
+        end
       end
     end
 
