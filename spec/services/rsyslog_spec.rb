@@ -75,7 +75,6 @@ if service_status == 'disabled'
     describe file(config_directory) do
       it { should_not exist }
     end
-    
     files.each do |file|
       describe file("#{config_directory}/#{file}") do
         it { should_not exist }
