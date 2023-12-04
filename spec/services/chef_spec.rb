@@ -49,7 +49,7 @@ if service_status == 'enabled'
     describe 'Registered in consul' do
       api_endpoint = 'http://localhost:8500/v1'
       service_json = command("curl -s #{api_endpoint}/catalog/service/#{serv_consul} | jq -r '.[]'").stdout
-      health = command("curl -s #{api_endpoint}/health/service/#{service_in_consul} | jq -r '.[].Checks[0].Status'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'").stdout
       health = health.strip
       registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
       it 'Should be registered and enabled' do
