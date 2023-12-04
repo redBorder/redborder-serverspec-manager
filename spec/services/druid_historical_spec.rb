@@ -7,8 +7,6 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 service = 'druid-historical'
 port = 8083
 
-service_status = command("systemctl is-enabled #{service}").stdout.strip
-
 def service_registered_and_healthy?(service)
   api_endpoint = 'http://localhost:8500/v1'
   service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
