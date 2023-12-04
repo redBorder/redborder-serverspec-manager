@@ -10,7 +10,7 @@ packages = %w[
 
 service = 'chef-client'
 config_file = '/etc/chef/client.rb'
-port = 4443 
+port = 4443
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
