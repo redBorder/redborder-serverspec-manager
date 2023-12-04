@@ -39,7 +39,6 @@ if service_status == 'enabled'
       it { should exist }
       it { should be_file }
     end
-
   end
 end
 
@@ -53,6 +52,5 @@ if service_status == 'disabled'
     describe file(config_file) do
       it { should_not exist }
     end
-
   end
 end
