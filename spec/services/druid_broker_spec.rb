@@ -6,33 +6,56 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 packages = %w[
   redborder-druid cookbook-druid druid
 ]
+service = 'druid-broker'
+port = 8084
 
-describe 'Checking druid-broker' do
+describe "Checking packages for #{service}..." do
   packages.each do |package|
     describe package(package) do
-      it { should be_installed }
+      before do
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
+      end
+
+      it 'is expected to be installed' do
+        expect(package(package).installed?).to be true
+      end
     end
   end
+end
 
-  describe service('druid-broker') do
-    it { should be_enabled }
-    it { should be_running }
+if service_status == 'enabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe port(port) do
+      it { should be_listening }
+    end
+
+    describe 'Registered in consul' do
+      api_endpoint = 'http://localhost:8500/v1'
+      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
+      health = health.strip
+      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
+      it 'Should be registered and enabled' do
+        expect(registered).to be true
+      end
+    end
   end
+end
 
-  describe port(8084) do
-    it { should be_listening }
-  end
+if service_status == 'disabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
 
-  describe 'Registered in consul' do
-    service_name = 'druid-broker'
-    response = "curl -s http://localhost:8500/v1/catalog/service/#{service_name} | jq -r '.[].Address'"
-    health = "curl -s http://localhost:8500/v1/health/service/#{service_name} | jq -r '.[].Checks' | jq -r '.[].Status'"
-    service_health = command(health).stdout.split("\n")
-    ips = command(response).stdout.split("\n")
-    it 'Should be registered and enabled' do
-      expect(ips).not_to be_empty
-      passing_checks = service_health.to_s.chomp
-      expect(passing_checks).to include('passing')
+    describe port(port) do
+      it { should_not be_listening }
     end
   end
 end

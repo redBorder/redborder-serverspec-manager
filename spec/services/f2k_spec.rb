@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-service = 'kafka'
-port = 9092
+service = 'f2k'
+port = 2055
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 
-packages = %w[cookbook-kafka confluent-kafka redborder-kafka librdkafka n2kafka rsyslog-kafka]
+packages = %w[cookbook-f2k f2k]
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|

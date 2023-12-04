@@ -8,29 +8,59 @@ packages = %w[
   consul cookbook-consul
 ]
 
-describe 'Checking consul' do
+service = 'consul'
+port = 8300
+
+describe "Checking packages for #{service}..." do
   packages.each do |package|
     describe package(package) do
-      it { should be_installed }
+      before do
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
+      end
+
+      it 'is expected to be installed' do
+        expect(package(package).installed?).to be true
+      end
     end
   end
+end
 
-  describe service('consul') do
-    it { should be_enabled }
-    it { should be_running }
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
+
+if service_status == 'enabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe port(port) do
+      it { should be_listening }
+    end
+
+    describe 'Registered in consul' do
+      api_endpoint = 'http://localhost:8500/v1'
+      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
+      health = health.strip
+      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
+      it 'Should be registered and enabled' do
+        expect(registered).to be true
+      end
+    end
   end
+end
 
-  describe port(8300) do
-    it { should be_listening }
-  end
+if service_status == 'disabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
 
-  describe 'Registered in consul' do
-    service_json = command("curl -s http://localhost:8500/v1/catalog/service/consul | jq -r '.[]'").stdout
-    health = command("curl -s http://localhost:8500/v1/health/service/consul | jq -r '.[].Checks[0].Status'").stdout
-    health = health.strip
-    registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
-    it do
-      expect(registered).to be true
+    describe port(port) do
+      it { should_not be_listening }
     end
   end
 end

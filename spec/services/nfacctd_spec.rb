@@ -3,11 +3,10 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-service = 'kafka'
-port = 9092
+service = 'nfacctd'
+port = 2100
 service_status = command("systemctl is-enabled #{service}").stdout.strip
-
-packages = %w[cookbook-kafka confluent-kafka redborder-kafka librdkafka n2kafka rsyslog-kafka]
+packages = %w[cookbook-pmacct pmacct]
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -33,16 +32,6 @@ if service_status == 'enabled'
     describe port(port) do
       it { should be_listening }
     end
-
-    describe 'Registered in consul' do
-      api_endpoint = 'http://localhost:8500/v1'
-      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
-      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout.strip
-      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
-      it 'Should be registered and enabled' do
-        expect(registered).to be true
-      end
-    end
   end
 end
 
@@ -56,5 +45,11 @@ if service_status == 'disabled'
     describe port(port) do
       it { should_not be_listening }
     end
+  end
+end
+
+describe "Checking #{service} for config file" do
+  describe file("/etc/pmacct/#{service}.conf") do
+    it { should exist }
   end
 end
