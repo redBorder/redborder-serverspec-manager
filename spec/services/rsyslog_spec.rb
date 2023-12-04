@@ -72,13 +72,11 @@ if service_status == 'disabled'
       it { should_not be_running }
     end
 
-    describe file(config_directory) do
-      it { should_not exist }
-    end
-    
-    files.each do |file|
-      describe file("#{config_directory}/#{file}") do
-        it { should_not exist }
+    describe 'Configuration files and directories' do
+      [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
+        describe file(file_path) do
+          it { should_not exist }
+        end
       end
     end
 
