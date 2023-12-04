@@ -39,16 +39,11 @@ if service_status == 'enabled'
       it { should be_running }
     end
 
-    describe "Configuration files and directories" do
+    describe 'Configuration files and directories' do
       [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
         describe file(file_path) do
           it { should exist }
-          
-          if File.directory?(file_path)
-            it { should be_directory }
-          else
-            it { should be_file }
-          end
+          it { should send(File.directory?(file_path) ? :be_directory : :be_file) }
         end
       end
     end
