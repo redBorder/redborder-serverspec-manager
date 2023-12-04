@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'postgresql'
@@ -25,14 +26,26 @@ if service_status == 'enabled'
     describe port(port) do
       it { should be_listening }
     end
-  end
 
-  describe 'Database Connection' do
-    describe command('psql -U redborder -d redborder -h localhost -c "\\l"') do
-      databases.each do |db|
-        its('stdout') { should match(/#{db}/) }
+    # Check if PostgreSQL is registered and healthy in Consul
+    describe 'Registered in consul' do
+      api_endpoint = 'http://localhost:8500/v1'
+      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout.strip
+      registered = JSON.parse(service_json).any? && health == 'passing'
+
+      it 'Should be registered and healthy' do
+        expect(registered).to be true
       end
-      its('exit_status') { should eq 0 }
+    end
+
+    describe 'Database Connection' do
+      describe command('psql -U redborder -d redborder -h localhost -c "\\l"') do
+        databases.each do |db|
+          its('stdout') { should match(/#{db}/) }
+        end
+        its('exit_status') { should eq 0 }
+      end
     end
   end
 end
