@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'memcached'
@@ -23,6 +24,18 @@ if service_status == 'enabled'
     describe 'Configuration' do
       describe file('/usr/lib/sysusers.d/memcached.conf') do
         it { should exist }
+      end
+    end
+
+    # Check if Memcached is registered and healthy in Consul
+    describe 'Registered in consul' do
+      api_endpoint = 'http://localhost:8500/v1'
+      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout.strip
+      registered = JSON.parse(service_json).any? && health == 'passing'
+
+      it 'Should be registered and healthy' do
+        expect(registered).to be true
       end
     end
   end
