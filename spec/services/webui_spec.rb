@@ -4,8 +4,8 @@ require 'spec_helper'
 require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-service = 'webui' # Reemplaza con el nombre real de tu servicio web
-port = 80 # Ajusta de acuerdo con el puerto en el que se ejecuta tu Web UI
+service = 'webui'
+port = 8001
 
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 
