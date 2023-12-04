@@ -6,15 +6,15 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 packages = %w[
   redborder-druid cookbook-druid druid
 ]
-
-describe 'Checking druid-coordinator' do
+service = 'druid-coordinator'
+describe "Checking #{service}" do
   packages.each do |package|
     describe package(package) do
       it { should be_installed }
     end
   end
 
-  describe service('druid-coordinator') do
+  describe service(service) do
     it { should be_enabled }
     it { should be_running }
   end
@@ -22,17 +22,14 @@ describe 'Checking druid-coordinator' do
   describe port(8084) do
     it { should be_listening }
   end
-
   describe 'Registered in consul' do
-    service_name = 'druid-coordinator'
-    response = "curl -s http://localhost:8500/v1/catalog/service/#{service_name} | jq -r '.[].Address'"
-    health = "curl -s http://localhost:8500/v1/health/service/#{service_name} | jq -r '.[].Checks' | jq -r '.[].Status'"
-    service_health = command(health).stdout.split("\n")
-    ips = command(response).stdout.split("\n")
+    api_endpoint = 'http://localhost:8500/v1'
+    service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+    health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
+    health = health.strip
+    registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
     it 'Should be registered and enabled' do
-      expect(ips).not_to be_empty
-      passing_checks = service_health.to_s.chomp
-      expect(passing_checks).to include('passing')
+      expect(registered).to be true
     end
   end
 end
