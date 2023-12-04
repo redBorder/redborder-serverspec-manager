@@ -6,6 +6,13 @@ describe port(22) do
   it { should be_listening }
 end
 
+describe 'Verificación del servicio SSH (sshd)' do
+  describe service('sshd') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+end
+
 describe 'Cluster Nodes' do
   describe command('serf members | grep -c "alive"') do 
     it 'There are at least 3 alive nodes' do
@@ -18,7 +25,6 @@ end
 describe 'Reachable nodes' do
   describe command('serf members | awk \'{split($2, a, ":"); print a[1]}\'') do
     its(:exit_status) { should eq 0 }
-
     it 'Main host can reach every node' do
       target_ips = subject.stdout.chomp.split("\n")
       target_ips.each do |target_ip|
