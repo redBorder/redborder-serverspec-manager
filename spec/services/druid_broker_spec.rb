@@ -23,6 +23,9 @@ describe "Checking packages for #{service}..." do
   end
 end
 
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
+
 if service_status == 'enabled'
   describe "Checking #{service_status} service for #{service}..." do
     describe service(service) do
