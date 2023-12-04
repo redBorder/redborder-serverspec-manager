@@ -3,27 +3,62 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-describe service('zookeeper') do
-  describe package('zookeeper') do
-    it { should be_installed }
-  end
-  it { should be_enabled }
-  it { should be_running }
+packages = %w[
+  zookeeper libzookeeper cookbook-zookeeper
+]
 
-  describe port(2181) do
-    it { should be_listening }
+service = 'zookeeper'
+port = 2181
+
+describe "Checking packages for #{service}..." do
+  packages.each do |package|
+    describe package(package) do
+      before do
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
+      end
+
+      it 'is expected to be installed' do
+        expect(package(package).installed?).to be true
+      end
+    end
   end
 end
 
-describe 'Registered in consul' do
-  service_name = 'zookeeper'
-  response = "curl -s http://localhost:8500/v1/catalog/service/#{service_name} | jq -r '.[].Address'"
-  health = "curl -s http://localhost:8500/v1/health/service/#{service_name} | jq -r '.[].Checks' | jq -r '.[].Status'"
-  service_health = command(health).stdout.split("\n")
-  ips = command(response).stdout.split("\n")
-  it 'Should be registered and enabled' do
-    expect(ips).not_to be_empty
-    passing_checks = service_health.to_s.chomp
-    expect(passing_checks).to include('passing')
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
+
+if service_status == 'enabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe port(port) do
+      it { should be_listening }
+    end
+
+    describe 'Registered in consul' do
+      api_endpoint = 'http://localhost:8500/v1'
+      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
+      health = health.strip
+      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
+      it 'Should be registered and enabled' do
+        expect(registered).to be true
+      end
+    end
+  end
+end
+if service_status == 'disabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
+
+    describe port(port) do
+      it { should_not be_listening }
+    end
   end
 end
