@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'webui' # Reemplaza con el nombre real de tu servicio web
@@ -23,6 +24,17 @@ if service_status == 'enabled'
     describe port(port) do
       it 'should be listening' do
         expect(subject).to be_listening
+      end
+    end
+
+    describe 'Registered in consul' do
+      api_endpoint = 'http://localhost:8500/v1'
+      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
+      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
+      health = health.strip
+      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
+      it 'Should be registered and enabled' do
+        expect(registered).to be true
       end
     end
   end
