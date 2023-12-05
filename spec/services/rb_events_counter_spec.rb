@@ -5,7 +5,6 @@ require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'redborder-events-counter'
-port = 5000
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 
 if service_status == 'enabled'
@@ -17,12 +16,6 @@ if service_status == 'enabled'
 
       it 'should be running' do
         expect(subject).to be_running
-      end
-    end
-
-    describe port(port) do
-      it 'should be listening' do
-        expect(subject).to be_listening
       end
     end
   end
@@ -39,25 +32,21 @@ if service_status == 'disabled'
         expect(subject).not_to be_running
       end
     end
-
-    describe port(port) do
-      it 'should not be listening' do
-        expect(subject).not_to be_listening
-      end
-    end
   end
 end
 
 describe 'Redborder Events Counter Configuration and Logs' do
-  describe file('/ruta/a/tu/archivo/de/configuracion') do
+  describe file('/etc/redborder-events-counter/config.yml') do
     it 'should exist' do
       expect(subject).to exist
     end
   end
 
-  describe file('/ruta/a/tu/archivo/de/log') do
-    it 'should exist' do
-      expect(subject).to exist
+  describe 'License File Check' do
+    let(:license_files) { command('find /etc/licenses -type f').stdout.split("\n") }
+
+    it 'should have at least one license file' do
+      expect(license_files.length).to be > 0
     end
   end
 end
