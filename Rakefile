@@ -2,6 +2,7 @@
 
 require 'rake'
 require 'rspec/core/rake_task'
+require './spec/helpers/get_mode'
 
 task default: :spec
 
@@ -30,5 +31,20 @@ namespace :spec do
     puts "Running Monitor tests on #{host} ..."
     t.pattern = 'spec/modules/monitor/*_spec.rb'
     t.rspec_opts = '--format documentation'  # O "--format progress"
+  end
+end
+
+namespace :redbrother do
+
+  host = ENV['TARGET_HOST'] || '10.1.209.20'
+
+  desc 'run mode tests'
+  services_to_test = get_mode_services()
+  puts "Running Mode tests on #{host} ..."
+  RSpec::Core::RakeTask.new(:mode) do |t|
+    services_to_test.each do |service|
+      t.pattern = "spec/services/#{service}_spec.rb"
+      t.rspec_opts = '--format documentation'  # O "--format progress"
+    end
   end
 end
