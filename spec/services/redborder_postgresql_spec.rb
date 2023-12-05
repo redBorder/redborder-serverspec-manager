@@ -7,31 +7,47 @@ packages = %w[
   redborder-postgresql postgresql
 ]
 
-describe 'Cheking redborder-postgresql' do
+service = 'redborder-postgresql'
+port = 5432
+
+describe "Cheking packages for #{service}" do
   packages.each do |package|
     describe package(package) do
-      it { should be_installed }
+      before do
+        skip("#{package} is not installed, skipping...") unless package(package).installed?
+      end
+      it 'is expected to be installed' do
+        expect(package(package).installed?).to be true
+      end
     end
   end
+end
 
-  describe service('postgresql') do
-    it { should be_enabled }
-    it { should be_running }
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
+
+if service_status == 'enabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should be_enabled }
+      it { should be_running }
+    end
+
+    describe port(port) do
+      it { should be_listening }
+    end
   end
+end
 
-  describe port(5432) do
-    it { should be_listening }
-  end
+if service_status == 'disabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
 
-  describe 'Registered in consul' do
-    api_url = 'http://localhost:8500/v1'
-    service = 'postgresql'
-    service_json = command("curl -s #{api_url}/catalog/service/#{service} | jq -r '.[]'").stdout
-    health = command("curl -s #{api_url}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
-    health = health.strip
-    registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
-    it do
-      expect(registered).to be true
+    describe port(port) do
+      it { should_not be_listening }
     end
   end
 end

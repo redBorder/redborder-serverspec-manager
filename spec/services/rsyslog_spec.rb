@@ -1,13 +1,19 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
-  redborder-druid cookbook-druid druid
+  rsyslog cookbook-rsyslog
 ]
-service = 'druid-broker'
-port = 8084
+
+service = 'rsyslog'
+config_directory = '/etc/rsyslog.d/'
+files = %w[
+  01-server.conf 02-general.conf 20-redborder.conf 99-parse_rfc5424.conf
+]
+port = 514
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -33,6 +39,15 @@ if service_status == 'enabled'
       it { should be_running }
     end
 
+    describe 'Configuration files and directories' do
+      [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
+        describe file(file_path) do
+          it { should exist }
+          it { should send(File.directory?(file_path) ? :be_directory : :be_file) }
+        end
+      end
+    end
+
     describe port(port) do
       it { should be_listening }
     end
@@ -55,6 +70,14 @@ if service_status == 'disabled'
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
+    end
+
+    describe 'Configuration files and directories' do
+      [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
+        describe file(file_path) do
+          it { should_not exist }
+        end
+      end
     end
 
     describe port(port) do
