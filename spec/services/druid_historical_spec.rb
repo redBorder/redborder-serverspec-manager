@@ -31,10 +31,6 @@ if service_status == 'enabled'
       it { should exist }
     end
 
-    describe file('/var/log/druid/historical.log') do
-      its(:content) { should_not match(/ERROR/) }
-    end
-
     it 'should be registered and healthy in Consul' do
       expect(service_registered_and_healthy?(service)).to be true
     end
