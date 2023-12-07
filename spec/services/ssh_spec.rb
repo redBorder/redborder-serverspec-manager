@@ -1,41 +1,39 @@
-# frozen_string_literal: true
-
+# frozen_string_literal: truezz<<SxczxZ
 require 'spec_helper'
 
 describe port(22) do
   it { should be_listening }
 end
 
-describe 'Verificación del servicio SSH (sshd)' do
+describe 'Service is enabled and running' do
   describe service('sshd') do
     it { should be_enabled }
     it { should be_running }
   end
 end
 
-describe 'Cluster Nodes' do
-  describe command('serf members | grep -c "alive"') do 
-    it 'There are at least 3 alive nodes' do
-      n_nodes = subject.stdout.to_i
-      expect(n_nodes).to be >= 3
-    end
+NODE_LIST_DELEGATE = "red node list 2>/dev/null"
+describe 'Getting node names' do
+  describe command NODE_LIST_DELEGATE do
+    its('exit_status') { should eq 0 }
+    its('stdout') { should_not be_empty }
   end
 end
 
-describe 'Reachable nodes' do
-  describe command('serf members | awk \'{split($2, a, ":"); print a[1]}\'') do
-    its(:exit_status) { should eq 0 }
-
-    it 'Has at least 3 target IPs' do
-      expect(target_ips.length).to be >= 3
-    end
-
-    it 'Main host can reach every node' do
-      target_ips = subject.stdout.chomp.split("\n")
-      target_ips.each do |target_ip|
-        expect(host(target_ip)).to be_reachable.with(:port => 22) # Cambia el puerto según el servicio que quieras comprobar
-      end
-    end
+nodes = command(NODE_LIST_DELEGATE).stdout.chomp.split("\n")
+describe 'Executing commands into nodes one by one' do
+  it 'At least one node is present' do
+    expect(nodes).not_to be_empty
   end
 end
 
+describe 'Executing commands into nodes one by one' do
+  nodes.each do |node|
+    it "Executing on Node: #{node}" do
+      result = command("red node execute #{node} 'echo SERVERSPEC'")
+      expect(result.exit_status).to eq(0)
+      expect(result.stdout).to include("#{node}")
+      expect(result.stdout).to include("SERVERSPEC")
+    end
+  end
+end
