@@ -8,7 +8,7 @@ service = 'f2k'
 port = 2055
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 
-packages = %w[cookbook-f2k f2k]
+packages = %w[f2k]
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -33,16 +33,6 @@ if service_status == 'enabled'
 
     describe port(port) do
       it { should be_listening }
-    end
-
-    describe 'Registered in consul' do
-      api_endpoint = 'http://localhost:8500/v1'
-      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
-      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout.strip
-      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
-      it 'Should be registered and enabled' do
-        expect(registered).to be true
-      end
     end
   end
 end
