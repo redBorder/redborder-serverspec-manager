@@ -4,7 +4,6 @@ require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'pmacctd'
-interface = 'eth0'
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 packages = %w[cookbook-pmacct pmacct]
 
