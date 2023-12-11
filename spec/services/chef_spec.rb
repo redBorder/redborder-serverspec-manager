@@ -9,9 +9,10 @@ packages = %w[
 ]
 
 service = 'chef-client'
-serv_consul = 'erchef'
 config_file = '/etc/chef/client.rb'
 port = 4443
+serv_consul = 'erchef'
+api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -47,13 +48,16 @@ if service_status == 'enabled'
     end
 
     describe 'Registered in consul' do
-      api_endpoint = 'http://localhost:8500/v1'
-      service_json = command("curl -s #{api_endpoint}/catalog/service/#{serv_consul} | jq -r '.[]'").stdout
-      health = command("curl -s #{api_endpoint}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'").stdout
-      health = health.strip
-      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
-      it 'Should be registered and enabled' do
-        expect(registered).to be true
+      service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'")
+      service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
+      health_cluster = command("curl -s #{api_endpoint}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'")
+      health_cluster = health_cluster.stdout.chomp.split("\n")
+      service_and_health = service_json_cluster.zip(health_cluster)
+      service_and_health.each do |service, health|
+        registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
+        it 'Should be registered and enabled' do
+          expect(registered).to be true
+        end
       end
     end
   end
