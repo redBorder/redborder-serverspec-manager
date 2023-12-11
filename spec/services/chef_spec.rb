@@ -48,15 +48,17 @@ if service_status == 'enabled'
     describe 'Registered in consul' do
       serv_consul = 'erchef'
       api_endpoint = 'http://localhost:8500/v1'
-      service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'").stdout.chomp.split("\n")
-      health_cluster = command("curl -s #{api_endpoint}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'").stdout.chomp.split("\n")
+      service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'")
+      service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
+      health_cluster = command("curl -s #{api_endpoint}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'")
+      health_cluster = health_cluster.stdout.chomp.split("\n")
       service_and_health = service_json_cluster.zip(health_cluster)
       service_and_health.each do |service, health|
         registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
         it 'Should be registered and enabled' do
           expect(registered).to be true
         end
-      end 
+      end
     end
   end
 end
