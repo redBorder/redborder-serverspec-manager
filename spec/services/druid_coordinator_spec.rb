@@ -10,14 +10,14 @@ packages = %w[
 service_in_consul = 'druid-coordinator'
 api_endpoint = 'http://localhost:8500/v1'
 
-describe "Checking #{service}" do
+describe "Checking #{service_in_consul}" do
   packages.each do |package|
     describe package(package) do
       it { should be_installed }
     end
   end
 
-  describe service(service) do
+  describe service(service_in_consul) do
     it { should be_enabled }
     it { should be_running }
   end
@@ -27,9 +27,9 @@ describe "Checking #{service}" do
   end
 
   describe 'Registered in consul' do
-    service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
+    service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service_in_consul} | jq -c 'group_by(.ID)[]'")
     service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
-    health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
+    health_cluster = command("curl -s #{api_endpoint}/health/service/#{service_in_consul} | jq -r '.[].Checks[0].Status'")
     health_cluster = health_cluster.stdout.chomp.split("\n")
     service_and_health = service_json_cluster.zip(health_cluster)
     service_and_health.each do |service, health|
