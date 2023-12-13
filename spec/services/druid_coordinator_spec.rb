@@ -32,7 +32,7 @@ describe "Checking #{service_in_consul}" do
     health_cluster = command("curl -s #{api_endpoint}/health/service/#{outer_service} | jq -r '.[].Checks[0].Status'")
     health_cluster = health_cluster.stdout.chomp.split("\n")
     service_and_health = service_json_cluster.zip(health_cluster)
-    service_and_health.each do |_se, health|
+    service_and_health.each do |service, health|
       registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
       it 'Should be registered and enabled' do
         expect(registered).to be true
