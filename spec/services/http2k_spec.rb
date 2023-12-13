@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 require 'json'
-api_endpoint = 'http://localhost:8500/v1'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'http2k'
 port = 7980
 service_status = command("systemctl is-enabled #{service}").stdout.strip
+api_endpoint = 'http://localhost:8500/v1'
 
 packages = %w[cookbook-http2k redborder-http2k]
 

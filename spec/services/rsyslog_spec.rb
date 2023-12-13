@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 require 'json'
-api_endpoint = 'http://localhost:8500/v1'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
@@ -15,6 +14,7 @@ files = %w[
   01-server.conf 02-general.conf 20-redborder.conf 99-parse_rfc5424.conf
 ]
 port = 514
+api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|

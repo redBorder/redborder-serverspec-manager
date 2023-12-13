@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 require 'json'
-api_endpoint = 'http://localhost:8500/v1'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'druid-historical'
 port = 8083
+api_endpoint = 'http://localhost:8500/v1'
 
 def services_registered_and_healthy?(service)
   api_endpoint = 'http://localhost:8500/v1'
@@ -40,7 +40,7 @@ if service_status == 'enabled'
     end
 
     it 'should be registered and healthy in Consul' do
-      expect(services_registered_and_healthy?(service)).to be true
+      expect(service_registered_and_healthy?(service)).to be true
     end
   end
 end

@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 require 'json'
-api_endpoint = 'http://localhost:8500/v1'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
@@ -11,6 +10,7 @@ packages = %w[
 
 service = 'druid-realtime'
 port = 8084
+api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
