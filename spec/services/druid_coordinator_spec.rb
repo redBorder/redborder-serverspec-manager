@@ -7,7 +7,7 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 packages = %w[
   redborder-druid cookbook-druid druid
 ]
-service = 'druid-coordinator'
+service_in_consul = 'druid-coordinator'
 api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking #{service}" do

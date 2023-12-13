@@ -6,8 +6,21 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'webui'
 port = 8001
-api_endpoint = 'http://localhost:8500/v1'
 service_status = command("systemctl is-enabled #{service}").stdout.strip
+
+def service_registered_and_healthy?(service)
+  api_endpoint = 'http://localhost:8500/v1'
+  service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
+  service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
+  health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
+  health_cluster = health_cluster.stdout.chomp.split("\n")
+  service_and_health = service_json_cluster.zip(health_cluster)
+
+  service_and_health.all? do |service_json, health|
+    registered = JSON.parse(service_json)[0].key?('Address') && health == 'passing'
+    registered # return the result of the check for this service/health pair
+  end
+end
 
 if service_status == 'enabled'
   describe 'Web UI Service Checks for Enabled Service' do
@@ -27,18 +40,8 @@ if service_status == 'enabled'
       end
     end
 
-    describe 'Registered in consul' do
-      service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
-      service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
-      health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
-      health_cluster = health_cluster.stdout.chomp.split("\n")
-      service_and_health = service_json_cluster.zip(health_cluster)
-      service_and_health.each do |service, health|
-        registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
-        it 'Should be registered and enabled' do
-          expect(registered).to be true
-        end
-      end
+    it 'should be registered and healthy in Consul' do
+      expect(service_registered_and_healthy?(service)).to be true
     end
   end
 end

@@ -6,7 +6,6 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'druid-historical'
 port = 8083
-api_endpoint = 'http://localhost:8500/v1'
 
 def services_registered_and_healthy?(service)
   api_endpoint = 'http://localhost:8500/v1'
