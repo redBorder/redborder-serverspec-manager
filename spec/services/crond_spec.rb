@@ -38,6 +38,3 @@ if service_status == 'disabled'
     end
   end
 end
-
-# Verificar archivo de configuración si es relevante
-# En sistemas Red Hat, crond generalmente no tiene un archivo de configuración específico, pero puedes agregar verificaciones para archivos crontab si es necesario
