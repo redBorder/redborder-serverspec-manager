@@ -13,6 +13,7 @@ config_file = '/etc/serf/00first.json'
 port = 7946
 # target_host = ENV['TARGET_HOST'] || '10.1.209.20'
 # ip_sync = ipaddress_sync // 10.1.215.20
+ip_sync = '10.1.215.20'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -48,8 +49,12 @@ if service_status == 'enabled'
     end
 
     describe command('serf members') do
-      its(:exit_status) { should eq 0 }
-      its(:stdout) { should match(/.*#{Regexp.escape(target_host)}.*/) }
+      it 'The command was executed successfully' do
+        expect(subject.exit_status).to eq 0
+      end
+      it 'Contains the IP sync value' do
+        expect(subject.stdout).to match(/.*#{Regexp.escape(ip_sync)}.*/)
+      end
     end
   end
 end
