@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'json'
+api_endpoint = 'http://localhost:8500/v1'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'memcached'
@@ -29,13 +30,16 @@ if service_status == 'enabled'
 
     # Check if Memcached is registered and healthy in Consul
     describe 'Registered in consul' do
-      api_endpoint = 'http://localhost:8500/v1'
-      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
-      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout.strip
-      registered = JSON.parse(service_json).any? && health == 'passing'
-
-      it 'Should be registered and healthy' do
-        expect(registered).to be true
+      service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
+      service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
+      health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
+      health_cluster = health_cluster.stdout.chomp.split("\n")
+      service_and_health = service_json_cluster.zip(health_cluster)
+      service_and_health.each do |service, health|
+        registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
+        it 'Should be registered and enabled' do
+          expect(registered).to be true
+        end
       end
     end
   end
