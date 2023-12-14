@@ -10,6 +10,9 @@ packages = %w[
 
 service = 'serf'
 config_file = '/etc/serf/00first.json'
+port = 7946
+# target_host = ENV['TARGET_HOST'] || '10.1.209.20'
+# ip_sync = ipaddress_sync // 10.1.215.20
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -35,9 +38,18 @@ if service_status == 'enabled'
       it { should be_running }
     end
 
+    describe port(port) do
+      it { should be_listening }
+    end
+
     describe file(config_file) do
       it { should exist }
       it { should be_file }
+    end
+
+    describe command('serf members') do
+      its(:exit_status) { should eq 0 }
+      its(:stdout) { should match(/.*#{Regexp.escape(target_host)}.*/) }
     end
   end
 end
