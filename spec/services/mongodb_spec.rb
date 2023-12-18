@@ -54,3 +54,16 @@ if service_status == 'enabled'
     end
   end
 end
+
+if service_status == 'disabled'
+  describe "Checking #{service_status} service for #{service}..." do
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
+
+    describe port(port) do
+      it { should_not be_listening }
+    end
+  end
+end
