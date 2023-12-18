@@ -5,7 +5,7 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'redborder-dswatcher'
 service_status = command("systemctl is-enabled #{service}").stdout.strip
-packages = %w[redborder-dswatcher] 
+packages = %w[redborder-dswatcher]
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -40,7 +40,7 @@ if service_status == 'disabled'
 end
 
 describe "Checking for config file of #{service}" do
-  describe file("/etc/redborder-dswatcher/config.yml") do
+  describe file('/etc/redborder-dswatcher/config.yml') do
     it { should exist }
   end
 end
