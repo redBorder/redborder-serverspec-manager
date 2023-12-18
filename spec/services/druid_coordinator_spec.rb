@@ -7,17 +7,17 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 packages = %w[
   redborder-druid cookbook-druid druid
 ]
-outer_service = 'druid-coordinator'
+service = 'druid-coordinator'
 api_endpoint = 'http://localhost:8500/v1'
 
-describe "Checking #{service_in_consul}" do
+describe "Checking #{packages}" do
   packages.each do |package|
     describe package(package) do
       it { should be_installed }
     end
   end
 
-  describe service(service_in_consul) do
+  describe service(service) do
     it { should be_enabled }
     it { should be_running }
   end
@@ -27,13 +27,13 @@ describe "Checking #{service_in_consul}" do
   end
 
   describe 'Registered in consul' do
-    service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{outer_ervice} | jq -c 'group_by(.ID)[]'")
+    service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
     service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
-    health_cluster = command("curl -s #{api_endpoint}/health/service/#{outer_service} | jq -r '.[].Checks[0].Status'")
+    health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
     health_cluster = health_cluster.stdout.chomp.split("\n")
     service_and_health = service_json_cluster.zip(health_cluster)
-    service_and_health.each do |service, health|
-      registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
+    service_and_health.each do |srv, health|
+      registered = JSON.parse(srv)[0].key?('Address') && health == 'passing' # ? true : false
       it 'Should be registered and enabled' do
         expect(registered).to be true
       end
