@@ -49,6 +49,10 @@ Directory structure:
     ├── configuration/
     │   ├── ... > OR HERE
     │
+    ├── modules/
+    │   ├── monitor
+    |       ├── ... > OR HERE
+    │
     └── helpers/
         ├── ...         
 ```
