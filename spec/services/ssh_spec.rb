@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe port(22) do
@@ -11,7 +12,6 @@ describe 'Service is enabled and running' do
     it { should be_running }
   end
 end
-
 
 NODE_LIST = command('red node list 2>/dev/null').stdout.chomp.split("\n")
 describe 'Executing commands into nodes one by one' do
@@ -28,4 +28,3 @@ describe 'Executing commands into nodes one by one' do
     end
   end
 end
-
