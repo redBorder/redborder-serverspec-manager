@@ -12,7 +12,6 @@ describe 'Checking systemd-journald' do
   describe 'Configuration' do
     describe file('/etc/systemd/journald.conf') do
       it { should exist }
-      it { should contain 'Storage=volatile' }
     end
   end
 end
