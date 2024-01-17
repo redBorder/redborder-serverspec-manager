@@ -5,12 +5,12 @@ require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
-  nginx cookbook-nginx
+  serf redborder-serf
 ]
 
-service = 'nginx'
-port = 443
-api_endpoint = 'http://localhost:8500/v1'
+service = 'serf'
+config_file = '/etc/serf/00first.json'
+port = 7946
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -40,18 +40,9 @@ if service_status == 'enabled'
       it { should be_listening }
     end
 
-    describe 'Registered in consul' do
-      service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
-      service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
-      health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
-      health_cluster = health_cluster.stdout.chomp.split("\n")
-      service_and_health = service_json_cluster.zip(health_cluster)
-      service_and_health.each do |service, health|
-        registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
-        it 'Should be registered and enabled' do
-          expect(registered).to be true
-        end
-      end
+    describe file(config_file) do
+      it { should exist }
+      it { should be_file }
     end
   end
 end
@@ -63,8 +54,8 @@ if service_status == 'disabled'
       it { should_not be_running }
     end
 
-    describe port(port) do
-      it { should_not be_listening }
+    describe file(config_file) do
+      it { should_not exist }
     end
   end
 end

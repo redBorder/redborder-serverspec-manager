@@ -15,6 +15,20 @@ files = %w[
 ]
 port = 514
 
+def service_registered_and_healthy?(service)
+  api_endpoint = 'http://localhost:8500/v1'
+  service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
+  service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
+  health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
+  health_cluster = health_cluster.stdout.chomp.split("\n")
+  service_and_health = service_json_cluster.zip(health_cluster)
+
+  service_and_health.all? do |service_json, health|
+    registered = JSON.parse(service_json)[0].key?('Address') && health == 'passing'
+    registered # return the result of the check for this service/health pair
+  end
+end
+
 describe "Checking packages for #{service}..." do
   packages.each do |package|
     describe package(package) do
@@ -52,15 +66,8 @@ if service_status == 'enabled'
       it { should be_listening }
     end
 
-    describe 'Registered in consul' do
-      api_endpoint = 'http://localhost:8500/v1'
-      service_json = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -r '.[]'").stdout
-      health = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'").stdout
-      health = health.strip
-      registered = JSON.parse(service_json).key?('Address') && health == 'passing' ? true : false
-      it 'Should be registered and enabled' do
-        expect(registered).to be true
-      end
+    it 'should be registered and healthy in Consul' do
+      expect(service_registered_and_healthy?(service)).to be true
     end
   end
 end
