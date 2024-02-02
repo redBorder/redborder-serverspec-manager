@@ -28,7 +28,7 @@ if service_status == 'enabled'
       it { should be_running }
     end
   end
-  
+
   describe "Checking config file for #{service}..." do
     describe file("/etc/#{service}/config.yml") do
       it { should exist }
