@@ -3,7 +3,7 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-service = "rb-arubacentral"
+service = 'rb-arubacentral'
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 packages = %w[cookbook-rb-arubacentral]
 
@@ -31,7 +31,7 @@ if service_status == 'enabled'
 
   describe "Checking config file for #{service}..." do
     describe file("/etc/#{service}/config.yml") do
-      it { should exist}
+      it { should exist }
     end
   end
 end
