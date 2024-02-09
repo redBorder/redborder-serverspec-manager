@@ -8,14 +8,14 @@ service_status = command("systemctl is-enabled #{service}").stdout.strip
 packages = %w[cookbook-rb-arubacentral]
 
 describe "Checking packages for #{service}..." do
-  packages.each do |package|
-    describe package(package) do
+  packages.each do |p|
+    describe package(p) do
       before do
-        skip("#{package} is not installed, skipping...") unless package(package).installed?
+        skip("#{p} is not installed, skipping...") unless package(p).installed?
       end
 
       it 'is expected to be installed' do
-        expect(package(package).installed?).to be true
+        expect(package(p).installed?).to be true
       end
     end
   end
