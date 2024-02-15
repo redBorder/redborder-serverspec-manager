@@ -35,18 +35,11 @@ namespace :spec do
     t.pattern = 'spec/services/*_spec.rb'
     t.rspec_opts = '--format documentation'  # O "--format progress"
   end
-  
+
   desc 'run monitor tests'
   RSpec::Core::RakeTask.new(:monitor_cluster) do |t|
     puts "Running Monitor tests on #{host} ..."
     t.pattern = 'spec/modules/monitor/*_spec.rb'
-    t.rspec_opts = '--format documentation'  # O "--format progress"
-  end
-
-  desc 'run configuration tests'
-  RSpec::Core::RakeTask.new(:configuration) do |t|
-    puts "Running configuration tests on #{host} ..."
-    t.pattern = 'spec/configuration/*_spec.rb'
     t.rspec_opts = '--format documentation'  # O "--format progress"
   end
 end
