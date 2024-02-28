@@ -54,5 +54,5 @@ describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgrou
   it { should be_file }
   it { should be_executable.by(:owner) }
   it { should be_executable.by(:group) }
-  its(:content) { should match(%r{^(\s*#.*|)#!\/usr\/bin\/env\s+ruby.*$}) }
+  its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
 end
