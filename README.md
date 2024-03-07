@@ -28,6 +28,9 @@ To run a specific test type, use the following command:
 rake spec:configuration
 ```
 
+To run a specific test in a spec file, better use tags:
+```
+rspec --tag tag_name
 To run a specific script test, use the following command:
 ```
 rspec spec/services/cgroup_spec.rb 
@@ -60,4 +63,9 @@ Directory structure:
     │
     └── helpers/
         ├── ...         
+```
+
+Tag a describe to run by specific command ie:
+```
+describe ("Any test for this"), :tagname do
 ```
