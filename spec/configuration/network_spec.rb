@@ -30,7 +30,7 @@ end
 describe 'Sync network' do
   sync = command('ip addr show').stdout
   it 'Have a network sync' do
-    interfaces_with_ip = sync.scan(/inet\s+(\d+\.\d+\.\d+\.\d+)/).flatten
+    interfaces_with_ip = sync.scan(/inet\s+(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/).flatten
     expect(interfaces_with_ip.length).to be >= 3
     puts "OUTPUT: #{interfaces_with_ip}"
   end
