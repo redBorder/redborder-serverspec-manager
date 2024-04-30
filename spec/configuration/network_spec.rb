@@ -31,7 +31,11 @@ describe 'Sync network' do
   sync = command('ip addr show').stdout
   it 'Have a network sync' do
     interfaces_with_ip = sync.scan(/inet\s+(\d+\.\d+\.\d+\.\d+)/).flatten
-    expect(interfaces_with_ip.length).to be >= 3
+    if ENV['IS_CLUSTER']
+      expect(interfaces_with_ip.length).to be >= 3
+    else
+      skip 'One node does not need sync interface'
+    end
     puts "OUTPUT: #{interfaces_with_ip}"
   end
 end
@@ -65,6 +69,10 @@ end
 describe 'IPMI' do
   ipmi_status = command('rpm -qa | grep ipmi').stdout
   it 'Status IPMI' do
-    expect(ipmi_status).to include('ipmi')
+    if ENV['IS_CLUSTER']
+      expect(ipmi_status).to include('ipmi')
+    else
+      skip 'One node does not need IPMI'
+    end
   end
 end

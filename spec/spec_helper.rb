@@ -7,6 +7,11 @@ require 'tempfile'
 set :backend, :ssh
 set :disable_sudo, true
 
+# spec/spec_helper.rb
+
+# Check if IS_CLUSTER environment variable is already set
+ENV['IS_CLUSTER'] ||= 'true' unless ENV.key?('IS_CLUSTER') && ENV['IS_CLUSTER'] == 'false'
+
 # ssh setup
 host = ENV['TARGET_HOST'] || '10.1.209.20'
 options = Net::SSH::Config.for(host)
@@ -18,5 +23,4 @@ options[:password] = if ENV['ASK_LOGIN_PASSWORD']
                      else
                        ENV['LOGIN_PASSWORD'] || 'redborder'
                      end
-
 set :ssh_options, options
