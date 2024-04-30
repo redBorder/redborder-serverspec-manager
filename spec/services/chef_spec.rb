@@ -80,7 +80,7 @@ if service_status == 'disabled'
   end
 end
 
-describe command("journalctl -u #{service}"), :chef_journal do
+describe command("journalctl -u #{service} | awk '/LoadError/ {print; exit}'"), :chef_journal do
   its('exit_status') { should eq 0 }
   its('stdout') { should_not match(/LoadError/) }
 end
