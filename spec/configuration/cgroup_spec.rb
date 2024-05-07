@@ -56,3 +56,10 @@ describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgrou
   it { should be_executable.by(:group) }
   its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
 end
+
+describe file('/sys/fs/cgroup/redborder.slice/redborder-chefclient.slice/memory.current'), :chef_client_cgroup do
+  it { should exist }
+  it { should be_file }
+  its('content') { should_not be_empty }
+  its('content.to_i') { should be > 0 }
+end
