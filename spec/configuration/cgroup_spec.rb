@@ -57,6 +57,8 @@ describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgrou
   its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
 end
 
-describe file('/sys/fs/cgroup/redborder.slice/redborder-chefclient.slice/memory.current'), :chef_client_cgroup do
-  it { should_not exist }
+hostname = command('hostname -s')
+describe command("knife node show #{hostname} -l | grep excluded_memory_services") do
+  its('stdout') { should match(/excluded_memory_services:/) }
+  its('stdout') { should match(/chef-client/) }
 end
