@@ -58,7 +58,6 @@ describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgrou
 end
 
 hostname = command('hostname -s')
-describe command("knife node show #{hostname} -l | grep excluded_memory_services") do
-  its('stdout') { should match(/excluded_memory_services:/) }
+describe command("knife node show #{hostname} -l -F json | jq '.default.redborder.excluded_memory_services'") do
   its('stdout') { should match(/chef-client/) }
 end
