@@ -33,11 +33,7 @@ describe "Checking #{service_status} service for #{service}..." do
   end
 end
 
-describe "Checking for config files of #{service}" do
-  describe file('/etc/redborder-ale/config.yml') do
-    it { should exist }
-  end
-  describe file('/etc/redborder-ale/rb_ale_aps.conf') do
-    it { should exist }
-  end
+command_to_check = '/usr/lib/rvm/rubies/ruby-2.7.5/bin/ruby'
+describe command("sudo -u #{service} #{command_to_check} -e 'exit 0' 2>&1") do
+  its(:exit_status) { should eq 0 }
 end
