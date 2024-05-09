@@ -61,9 +61,9 @@ end
 hostname = command('hostname -s')
 excluded_memory_services = command("knife node show #{hostname} -l -F json | jq '.default.redborder.excluded_memory_services | keys[]'").split("\n")
 
-describe 'Check chef-client is a excluded memory service' do
-  describe command("knife node show #{hostname} -l -F json | jq '.default.redborder.excluded_memory_services | keys[]'") do
-    its('stdout') { should match(/chef-client/) }
+describe 'Check excluded memory service' do
+  it 'Check chef-client is a excluded memory service' do
+    expect(excluded_memory_services).to include('chef-client')
   end
 
   excluded_memory_services.each do |service|
