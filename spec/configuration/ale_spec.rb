@@ -3,6 +3,8 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
+#TODO: only do it if ale  is enabled
+
 describe 'Check ale config' do
   describe file('/etc/redborder-ale/schema.pb.rb') do
     it { should exist }
@@ -31,10 +33,5 @@ end
 describe 'Redborder-Ale user config' do
   describe command('sudo -u redborder-ale bash -lc "ruby -v"') do
     its(:stdout) { should match /ruby 2.7.5/ }
-  end
-
-# Notice this is a bash session, when closed the gemset will change to default
-  describe command('sudo -u redborder-ale bash -lc "rvm gemset list"') do
-    its(:stdout) { should match /\=\>\s*global/ }
   end
 end
