@@ -39,6 +39,6 @@ end
 
 describe 'Redborder-Ale user config' do
   describe command('sudo -u redborder-ale bash -lc "ruby -v"') do
-    its(:stdout) { should match /ruby 2.7.5/ }
+    its(:stdout) { should match(/ruby 2.7.5/) }
   end
 end
