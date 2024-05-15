@@ -3,8 +3,7 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-#TODO: only do it if ale  is enabled
-
+# TODO: only do it if ale  is enabled
 describe 'Check ale config' do
   describe file('/etc/redborder-ale/schema.pb.rb') do
     it { should exist }
