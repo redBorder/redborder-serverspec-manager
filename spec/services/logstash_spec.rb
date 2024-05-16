@@ -9,6 +9,7 @@ packages = %w[
 
 service = 'logstash'
 port = 9600
+hostname = command('hostname -s').stdout
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -49,6 +50,24 @@ if service_status == 'disabled'
 
     describe port(port) do
       it { should_not be_listening }
+    end
+  end
+end
+
+describe 'Pipelines status' do
+  describe command("knife node show #{hostname} --attribute default.redborder.logstash") do
+    its('exit_status') { should eq 0 }
+    its('stdout') do
+      # Parse JSON output and check if ATTRIBUTE_NAME is empty
+      json_output = JSON.parse(subject.stdout)
+      attribute_value = json_output['pipelines']
+
+      if attribute_value.nil? || attribute_value.empty?
+        describe service(service) do
+          it { should_not be_enabled }
+          it { should_not be_running }
+        end
+      end
     end
   end
 end
