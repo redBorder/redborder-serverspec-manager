@@ -16,18 +16,17 @@ describe "Checking packages for #{SERVICE}..." do
     end
   end
 end
-
-INSTALLED_WHEN_NEEDED_PKGS = Set.new(%w[redborder-ale])
-are_pkgs_installed = MUST_INSTALLED_PKGS.merge(INSTALLED_WHEN_NEEDED_PKGS).all? do |pkg|
-  package(pkg).installed?
-end
-
+# TODO: Test if there is any Ale sensor in the list to determine if the service should be up and running
 service_status = command("systemctl is-enabled #{SERVICE}").stdout.strip
 describe "Checking #{service_status} service for #{SERVICE}..." do
   describe service(SERVICE) do
     if service_status == 'enabled'
       it { should be_enabled }
       it { should be_running }
+      INSTALLED_WHEN_NEEDED_PKGS = Set.new(%w[redborder-ale])
+      are_pkgs_installed = MUST_INSTALLED_PKGS.merge(INSTALLED_WHEN_NEEDED_PKGS).all? do |pkg|
+        package(pkg).installed?
+      end
       expect(are_pkgs_installed).to be true
     elsif service_status == 'disabled'
       it { should_not be_enabled }
