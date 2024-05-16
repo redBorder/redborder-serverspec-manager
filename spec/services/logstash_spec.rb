@@ -30,10 +30,9 @@ describe "Checking service status for #{service}..." do
   service_status = command("systemctl is-enabled #{service}").stdout.strip
   logstash_attr = command("knife node show #{HOSTNAME} --attribute default.redborder.logstash -F json").stdout.strip
   JSON.parse(logstash_attr)
-  pipelines = logstash_attr['pipelines'] # list of present pipelines
-  is_pipelines_void = pipelines.nil? || pipelines.empty?
+  pipelines = logstash_attr['pipelines'] || [] # list of present pipelines
 
-  if service_status == 'disabled' || is_pipelines_void
+  if service_status == 'disabled' || pipelines.empty?
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
