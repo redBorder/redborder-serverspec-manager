@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 packages = %w[
@@ -9,7 +10,7 @@ packages = %w[
 
 service = 'logstash'
 port = 9600
-hostname = command('hostname -s').stdout
+HOSTNAME = command('hostname -s').stdout.chomp
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -17,7 +18,6 @@ describe "Checking packages for #{service}..." do
       before do
         skip("#{package} is not installed, skipping...") unless package(package).installed?
       end
-
       it 'is expected to be installed' do
         expect(package(package).installed?).to be true
       end
@@ -25,49 +25,31 @@ describe "Checking packages for #{service}..." do
   end
 end
 
-service_status = command("systemctl is-enabled #{service}").stdout
-service_status = service_status.strip
+describe "Checking service status for #{service}..." do
+  # Building conditions
+  service_status = command("systemctl is-enabled #{service}").stdout.strip
+  logstash_attr = command("knife node show #{HOSTNAME} --attribute default.redborder.logstash -F json").stdout.strip
+  JSON.parse(logstash_attr)
+  pipelines = logstash_attr['pipelines'] # list of present pipelines
+  is_pipelines_void = pipelines.nil? || pipelines.empty?
 
-if service_status == 'enabled'
-  describe "Checking #{service_status} service for #{service}..." do
-    describe service(service) do
-      it { should be_enabled }
-      it { should be_running }
-    end
-
-    describe port(port) do
-      it { should be_listening }
-    end
-  end
-end
-
-if service_status == 'disabled'
-  describe "Checking #{service_status} service for #{service}..." do
+  if service_status == 'disabled' || is_pipelines_void
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-
     describe port(port) do
       it { should_not be_listening }
     end
-  end
-end
-
-describe 'Pipelines status' do
-  describe command("knife node show #{hostname} --attribute default.redborder.logstash") do
-    its('exit_status') { should eq 0 }
-    its('stdout') do
-      # Parse JSON output and check if ATTRIBUTE_NAME is empty
-      json_output = JSON.parse(subject.stdout)
-      attribute_value = json_output['pipelines']
-
-      if attribute_value.nil? || attribute_value.empty?
-        describe service(service) do
-          it { should_not be_enabled }
-          it { should_not be_running }
-        end
-      end
+  elsif service_status == 'enabled'
+    describe service(service) do
+      it { should be_enabled }
+      it { should be_running }
     end
+    describe port(port) do
+      it { should be_listening }
+    end
+  else
+    expect(false)
   end
 end
