@@ -80,7 +80,7 @@ non_excluded_serv = memory_services.difference(excluded_memory_services)
 describe 'Checking Slices of Non Excluded Memory Services' do
   non_excluded_serv.each do |service|
     describe command("systemctl show --property Slice --value #{service}") do
-      no_dash = service.gsub('-','')
+      no_dash = service.gsub('-', '')
       its('stdout') { should eq "redborder-#{no_dash}.slice" }
     end
   end
