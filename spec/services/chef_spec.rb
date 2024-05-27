@@ -32,7 +32,7 @@ end
 # service_status = service_status.strip
 
 # if service_status == 'enabled'
-  describe "Checking #{service_status} service for #{service}..." do
+  describe "Checking service_status service for #{service}..." do
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
