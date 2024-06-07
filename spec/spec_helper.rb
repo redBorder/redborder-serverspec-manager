@@ -8,7 +8,7 @@ set :backend, :ssh
 set :disable_sudo, true
 
 # ssh setup
-host = ENV['TARGET_HOST'] || '10.1.209.20'
+host = ENV['TARGET_HOST'] || '10.0.209.20'
 options = Net::SSH::Config.for(host)
 set :host, options[:host_name] || host
 options[:user] ||= ENV['LOGIN_USERNAME'] || 'root'
