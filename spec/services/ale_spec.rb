@@ -35,7 +35,12 @@ describe "Checking #{service_status} service for #{SERVICE}..." do
   end
 end
 
-command_to_check = '/usr/lib/rvm/rubies/ruby-2.7.5/bin/ruby'
-describe command("sudo -u #{SERVICE} #{command_to_check} -e 'exit 0' 2>&1") do
-  its(:exit_status) { should eq 0 }
+describe 'Redborder-ale is using correct ruby setup' do
+  if service_status == 'enabled'
+    describe command('sudo -u redborder-ale which ruby') do
+      its(:stdout) { should match %r{/usr/lib/rvm/rubies/ruby-2.7.5/bin/ruby} }
+    end
+  elsif service_status == 'disabled'
+    skip('Service is disabled')
+  end
 end
