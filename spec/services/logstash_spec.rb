@@ -39,7 +39,9 @@ describe "Checking service status for #{service}..." do
     describe port(port) do
       it { should_not be_listening }
     end
-  elsif service_status == 'enabled'
+  end
+
+  if service_status == 'enabled'
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
@@ -47,7 +49,5 @@ describe "Checking service status for #{service}..." do
     describe port(port) do
       it { should be_listening }
     end
-  else
-    expect(false)
   end
 end
