@@ -11,6 +11,7 @@ packages = %w[
 service = 'logstash'
 port = 9600
 HOSTNAME = command('hostname -s').stdout.chomp
+PIPELINES_PATH = '/etc/logstash/pipelines.yml'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -26,13 +27,11 @@ describe "Checking packages for #{service}..." do
 end
 
 describe "Checking service status for #{service}..." do
-  # Building conditions
   service_status = command("systemctl is-enabled #{service}").stdout.strip
-  logstash_attr = command("knife node show #{HOSTNAME} --attribute default.redborder.logstash -F json").stdout.strip
-  JSON.parse(logstash_attr)
-  pipelines = logstash_attr['pipelines'] || [] # list of present pipelines
+  regex = '"^- pipeline\.id: .*-pipeline$"'
+  has_pipelines = command("grep --perl-regex -q '#{regex}' #{PIPELINES_PATH}").stdout
 
-  if service_status == 'disabled' || pipelines.empty?
+  if service_status == 'disabled' || !has_pipelines
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
