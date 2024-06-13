@@ -8,15 +8,15 @@ service = 'redborder-ale'
 package = 'redborder-ale'
 
 describe "Checking packages for #{service}..." do
-    describe package(package) do
-      before do
-        skip("#{package} is not installed, skipping...") unless package(package).installed?
-      end
-
-      it 'is expected to be installed' do
-        expect(package(package).installed?).to be true
-      end
+  describe package(package) do
+    before do
+      skip("#{package} is not installed, skipping...") unless package(package).installed?
     end
+
+    it 'is expected to be installed' do
+      expect(package(package).installed?).to be true
+    end
+  end
 end
 
 service_status = command("systemctl is-enabled #{service}").stdout.strip
