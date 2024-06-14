@@ -26,13 +26,10 @@ describe "Checking packages for #{service}..." do
 end
 
 describe "Checking service status for #{service}..." do
-  # Building conditions
-  service_status = command("systemctl is-enabled #{service}").stdout.strip
-  logstash_attr = command("knife node show #{HOSTNAME} --attribute default.redborder.logstash -F json").stdout.strip
-  JSON.parse(logstash_attr)
-  pipelines = logstash_attr['pipelines'] || [] # list of present pipelines
+  pipelines = command("knife node show #{HOSTNAME} --attribute default.pipelines -F json").stdout.strip
+  parsed_pipelines = JSON.parse(pipelines)
 
-  if service_status == 'disabled' || pipelines.empty?
+  if parsed_pipelines.empty? || parsed_pipelines.nil?
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
@@ -40,7 +37,7 @@ describe "Checking service status for #{service}..." do
     describe port(port) do
       it { should_not be_listening }
     end
-  elsif service_status == 'enabled'
+  elsif !parsed_pipelines.empty? || !parsed_pipelines.nil?
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
