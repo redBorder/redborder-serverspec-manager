@@ -47,25 +47,25 @@ if is_package_installed
     it { should exist }
     it { should be_file }
   end
-end
 
-describe file('/var/rb-ale/bin/rb_ale.rb') do
-  it { should exist }
-  it { should be_file }
-  it { should be_executable.by(:owner) }
-  it { should be_executable.by(:group) }
-  its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
-end
+  describe file('/var/rb-ale/bin/rb_ale.rb') do
+    it { should exist }
+    it { should be_file }
+    it { should be_executable.by(:owner) }
+    it { should be_executable.by(:group) }
+    its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
+  end
 
-describe file('/usr/bin/rb_scan_ale.rb') do
-  it { should exist }
-  it { should be_file }
-  it { should be_executable.by(:owner) }
-  it { should be_executable.by(:group) }
-end
+  describe file('/usr/bin/rb_scan_ale.rb') do
+    it { should exist }
+    it { should be_file }
+    it { should be_executable.by(:owner) }
+    it { should be_executable.by(:group) }
+  end
 
-describe 'Redborder-Ale user config' do
-  describe command('sudo -u redborder-ale bash -lc "ruby -v"') do
-    its(:stdout) { should match(/ruby 2.7.5/) }
+  describe 'Redborder-Ale user config' do
+    describe command('sudo -u redborder-ale bash -lc "ruby -v"') do
+      its(:stdout) { should match(/ruby 2.7.5/) }
+    end
   end
 end
