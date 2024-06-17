@@ -11,7 +11,7 @@ describe 'Checking only these users has login permission' do
   bash_users.map! { |p| p.split(':').first }
   bash_users = Set.new bash_users
 
-  allowed_users = Set.new %w[root redborder postgres]
+  allowed_users = Set.new %w[root redborder postgres minio]
   not_allowed_users = bash_users - allowed_users
 
   it 'should only allow specified users to have login permissions' do
