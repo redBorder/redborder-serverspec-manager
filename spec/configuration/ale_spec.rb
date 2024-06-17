@@ -27,6 +27,10 @@ if is_package_installed
       it { should exist }
       it { should be_file }
     end
+
+    describe package('zeromq-devel') do
+      it { should be_installed }
+    end
   end
 
   describe file('/var/rb-ale/bin/rb_ale.rb') do
