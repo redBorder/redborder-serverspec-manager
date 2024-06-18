@@ -6,6 +6,10 @@ On your workstation, execute the following command in your terminal:
 ```ssh
 bundle install
 ```
+Also make sure to share your public ssh key to target machine:
+```
+ssh-copy-id root@<target_ip>
+```
 
 ## Running Tests
 To run all tests, use the following command:
