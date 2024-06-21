@@ -11,6 +11,7 @@ packages = %w[
 service = 'logstash'
 port = 9600
 HOSTNAME = command('hostname -s').stdout.chomp
+PIPELINES_PATH = '/etc/logstash/pipelines.yml'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -45,7 +46,5 @@ describe "Checking service status for #{service}..." do
     describe port(port) do
       it { should be_listening }
     end
-  else
-    expect(false)
   end
 end
