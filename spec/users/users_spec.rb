@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # This file is for system users in general
 
 require 'spec_helper'
