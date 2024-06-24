@@ -13,7 +13,8 @@ set :disable_sudo, true
 ENV['IS_CLUSTER'] ||= 'true' unless ENV.key?('IS_CLUSTER') && ENV['IS_CLUSTER'] == 'false'
 
 # ssh setup
-host = ENV['TARGET_HOST'] || '10.0.209.20'
+ENV['TARGET_HOST'] ||= '10.0.209.20'
+host = ENV['TARGET_HOST']
 options = Net::SSH::Config.for(host)
 set :host, options[:host_name] || host
 options[:user] ||= ENV['LOGIN_USERNAME'] || 'root'
