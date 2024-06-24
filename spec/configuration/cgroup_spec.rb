@@ -59,7 +59,8 @@ describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgrou
 end
 
 hostname = command('hostname -s')
-excluded_memory_services = command("knife node show #{hostname} -l -F json | jq '.default.redborder.excluded_memory_services | keys[]'").split("\n")
+excluded_memory_services = command("knife node show #{hostname} -l -F json | " \
+                                   "jq '.default.redborder.excluded_memory_services | keys[]'").split("\n")
 
 describe 'Check excluded memory service' do
   it 'Check chef-client is a excluded memory service' do
@@ -73,7 +74,8 @@ describe 'Check excluded memory service' do
   end
 end
 
-memory_services = command("knife node show #{hostname} -l -F json | jq '.default.redborder.memory_services | keys[]'").split("\n")
+memory_services = command("knife node show #{hostname} -l -F json | " \
+                          "jq '.default.redborder.memory_services | keys[]'").split("\n")
 [memory_services, excluded_memory_services].map! { |array| Set.new(array) }
 non_excluded_serv = memory_services.difference(excluded_memory_services)
 
