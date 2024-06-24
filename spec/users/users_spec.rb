@@ -15,6 +15,6 @@ describe 'Checking only these users has login permission' do
   not_allowed_users = bash_users - allowed_users
 
   it 'should only allow specified users to have login permissions' do
-    expect(not_allowed_users).to be_empty
+    expect(not_allowed_users.to_a).to be_empty
   end
 end
