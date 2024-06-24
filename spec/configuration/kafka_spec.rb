@@ -25,7 +25,7 @@ describe 'Check logstash config' do
     it { should_not be_writable.by('others') }
     it { should_not be_executable }
     pipelines.each do |pipeline|
-        it { should contain pipeline }
+      it { should contain pipeline }
     end
   end
 end
