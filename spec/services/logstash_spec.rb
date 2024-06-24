@@ -11,6 +11,7 @@ packages = %w[
 service = 'logstash'
 port = 9600
 HOSTNAME = command('hostname -s').stdout.chomp
+PIPELINES_PATH = '/etc/logstash/pipelines.yml'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -26,10 +27,10 @@ describe "Checking packages for #{service}..." do
 end
 
 describe "Checking service status for #{service}..." do
-  # Building conditions
-  service_status = command("systemctl is-enabled #{service}").stdout.strip
+  pipelines = command("knife node show #{HOSTNAME} --attribute default.pipelines -F json").stdout.strip
+  parsed_pipelines = JSON.parse(pipelines)
 
-  if service_status == 'disabled'
+  if parsed_pipelines.empty? || parsed_pipelines.nil?
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
@@ -37,9 +38,7 @@ describe "Checking service status for #{service}..." do
     describe port(port) do
       it { should_not be_listening }
     end
-  end
-
-  if service_status == 'enabled'
+  elsif !parsed_pipelines.empty? || !parsed_pipelines.nil?
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
