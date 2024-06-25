@@ -5,7 +5,6 @@ require 'set'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = 'redborder-ale'
-package = 'redborder-ale'
 
 describe "Checking packages for #{service}..." do
   describe package(package) do
