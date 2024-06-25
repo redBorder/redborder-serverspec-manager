@@ -36,14 +36,12 @@ if is_package_installed
   describe file('/var/rb-ale/bin/rb_ale.rb') do
     it { should exist }
     it { should be_file }
+    it { should be_executable.by(:owner) }
+    it { should be_executable.by(:group) }
+    its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
   end
 
-  describe file('/etc/redborder-ale/config.yml') do
-    it { should exist }
-    it { should be_file }
-  end
-
-  describe file('/etc/redborder-ale/rb_ale_aps.conf') do
+  describe file('/usr/bin/rb_scan_ale.rb') do
     it { should exist }
     it { should be_file }
   end
