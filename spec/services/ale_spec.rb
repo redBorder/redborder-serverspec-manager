@@ -48,8 +48,8 @@ describe "Checking #{service_status} service for #{service}..." do
         health_cluster = health_cluster.stdout.chomp.split("\n")
         service_and_health = service_json_cluster.zip(health_cluster)
         service_and_health.each do |service, health|
-        registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
           it 'Should be registered and enabled' do
+            registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
             expect(registered).to be true
           end
         end
