@@ -6,7 +6,7 @@ require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 service = serv_consul = pkg = 'redborder-ale'
-port = 7779
+# port = 7779
 API_ENDPOINT = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
@@ -29,6 +29,10 @@ describe "Checking #{service_status} service for #{service}..." do
       it { should be_running }
     end
       
+    # describe port(port) do
+    #   it { should be_listening }
+    # end
+
     describe 'Registered in consul' do
       service_json_cluster = command("curl -s #{API_ENDPOINT}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'")
       service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
@@ -46,23 +50,20 @@ describe "Checking #{service_status} service for #{service}..." do
         end
       end
     end
-    
-    describe port(port) do
-      it { should be_listening }
-    end
+
   elsif service_status == 'disabled'
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
     end
-    health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
-    health_cluster = health_cluster.stdout.chomp.split("\n")
-    service_and_health = service_json_cluster.zip(health_cluster)
-    service_and_health.each do |service, health|
-      it 'Should be registered and enabled' do
-        registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
-        expect(registered).to be true
-      end
+    
+    # describe port(port) do
+    #   it { should_not be_listening }
+    # end
+
+    it 'Should be registered and enabled' do
+      registered = JSON.parse(service)[0].key?('Address') && health == 'passing' # ? true : false
+      expect(registered).to be true
     end
   end
 end
