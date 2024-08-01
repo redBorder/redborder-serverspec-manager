@@ -69,7 +69,7 @@ describe "Checking #{service_status} service for #{service}..." do
 end
 
 # describe 'Redborder-ale is using correct ruby setup' do
-    # describe command('sudo -u redborder-ale which ruby') do
-    #   its(:stdout) { should match %r{/usr/lib/rvm/rubies/ruby-2.7.5/bin/ruby} }
-    # end
+  # describe command('sudo -u redborder-ale which ruby') do
+  #   its(:stdout) { should match %r{/usr/lib/rvm/rubies/ruby-2.7.5/bin/ruby} }
+  # end
 # end
