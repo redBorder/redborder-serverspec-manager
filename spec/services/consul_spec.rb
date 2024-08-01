@@ -41,7 +41,7 @@ if service_status == 'enabled'
     end
 
     # Use this block to test other services that need to be registered in consul
-    describe "#{service} Registered in consul" do 
+    describe "#{service} Registered in consul" do
       service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
       service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
       it "API response for #{service} should not be empty" do
