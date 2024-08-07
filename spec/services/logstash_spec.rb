@@ -27,10 +27,11 @@ describe "Checking packages for #{service}..." do
 end
 
 describe "Checking service status for #{service}..." do
-  pipelines = command("knife node show #{HOSTNAME} --attribute default.pipelines -F json").stdout.strip
-  parsed_pipelines = JSON.parse(pipelines)
+  service_status = command("systemctl is-enabled #{service}").stdout.strip
+  regex = '^- pipeline\.id: .*-pipeline$'
+  has_pipelines = command("grep --perl-regex '#{regex}' #{PIPELINES_PATH}").stdout
 
-  if parsed_pipelines.empty? || parsed_pipelines.nil?
+  if !has_pipelines
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
@@ -38,7 +39,9 @@ describe "Checking service status for #{service}..." do
     describe port(port) do
       it { should_not be_listening }
     end
-  elsif !parsed_pipelines.empty? || !parsed_pipelines.nil?
+  end
+
+  if has_pipelines
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
