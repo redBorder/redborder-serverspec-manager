@@ -27,11 +27,10 @@ describe "Checking packages for #{service}..." do
 end
 
 describe "Checking service status for #{service}..." do
-  service_status = command("systemctl is-enabled #{service}").stdout.strip
   regex = '^- pipeline\.id: .*-pipeline$'
   has_pipelines = command("grep --perl-regex '#{regex}' #{PIPELINES_PATH}").stdout
 
-  if !has_pipelines
+  unless has_pipelines
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
