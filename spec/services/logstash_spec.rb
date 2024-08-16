@@ -15,26 +15,9 @@ PIPELINES_PATH = '/etc/logstash/pipelines.yml'
 
 describe "Checking service status for #{service}..." do
   regex = '^- pipeline\.id: .*-pipeline$'
-  has_pipelines = command("grep --perl-regex '#{regex}' #{PIPELINES_PATH}")
+  has_pipelines = command("grep --perl-regex '#{regex}' #{PIPELINES_PATH}").exit_status == 0
 
-  unless has_pipelines.exit_status == 0
-    describe service(service) do
-      it { should_not be_enabled }
-      it { should_not be_running }
-    end
-    describe port(port) do
-      it { should_not be_listening }
-    end
-
-    packages.each do |package|
-      describe package(package) do
-        it { should_not be_installed }
-      end
-    end
-
-  end
-
-  if has_pipelines.exit_status == 0
+  if has_pipelines
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
@@ -48,6 +31,19 @@ describe "Checking service status for #{service}..." do
         it { should be_installed }
       end
     end
+  else
+    describe service(service) do
+      it { should_not be_enabled }
+      it { should_not be_running }
+    end
+    describe port(port) do
+      it { should_not be_listening }
+    end
 
+    packages.each do |package|
+      describe package(package) do
+        it { should_not be_installed }
+      end
+    end
   end
 end
