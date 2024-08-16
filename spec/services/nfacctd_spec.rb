@@ -33,6 +33,9 @@ if service_status == 'enabled'
       it { should be_listening }
     end
   end
+  describe file("/etc/pmacct/#{service}.conf") do
+    it { should exist }
+  end
 end
 
 if service_status == 'disabled'
@@ -46,10 +49,7 @@ if service_status == 'disabled'
       it { should_not be_listening }
     end
   end
-end
-
-describe "Checking #{service} for config file" do
   describe file("/etc/pmacct/#{service}.conf") do
-    it { should exist }
+    it { should_not exist }
   end
 end
