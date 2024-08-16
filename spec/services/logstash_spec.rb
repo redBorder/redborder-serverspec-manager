@@ -15,7 +15,7 @@ PIPELINES_PATH = '/etc/logstash/pipelines.yml'
 
 describe "Checking service status for #{service}..." do
   regex = '^- pipeline\.id: .*-pipeline$'
-  has_pipelines = command("grep --perl-regex '#{regex}' #{PIPELINES_PATH}").exit_status == 0
+  has_pipelines = command("grep --perl-regex '#{regex}' #{PIPELINES_PATH}").stdout
   expected_state = has_pipelines ? :be_enabled : :not_be_enabled
   expected_running = has_pipelines ? :be_running : :not_be_running
   expected_listening = has_pipelines ? :be_listening : :not_be_listening
