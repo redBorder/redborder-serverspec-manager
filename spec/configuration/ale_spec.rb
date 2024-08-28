@@ -15,6 +15,7 @@ if is_package_installed
     describe file('/etc/redborder-ale/config.yml') do
       it { should exist }
       it { should be_file }
+      it { should_not be_empty }
     end
 
     describe file('/etc/redborder-ale/rb_ale_aps.conf') do
