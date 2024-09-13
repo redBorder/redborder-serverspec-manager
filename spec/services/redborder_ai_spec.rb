@@ -45,6 +45,15 @@ describe "Checking #{service_status} service for #{service}..." do
       end
     end
 
+    describe 'Checking consul sync address' do
+      hostname = command('hostname').stdout.strip.split('.')[0]
+      sync_address = command("knife node show #{hostname} -l --attr ipaddress_sync | awk '/ipaddress_sync:/ {print $2}'").stdout.strip
+      ip_address = command("curl -s #{CONSUL_API_ENDPOINT}/catalog/service/#{serv_consul} | jq -r '.[0].Address'").stdout.strip
+      it 'should match sync address' do
+        expect(ip_address).to eq(sync_address)
+      end
+    end
+
   elsif service_status == 'disabled'
     describe service(service) do
       it { should_not be_enabled }
