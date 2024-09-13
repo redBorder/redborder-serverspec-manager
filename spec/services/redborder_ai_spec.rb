@@ -28,9 +28,11 @@ describe "Checking #{service_status} service for #{service}..." do
     end
 
     describe 'Registered in consul' do
-      service_json_cluster = command("curl -s #{CONSUL_API_ENDPOINT}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'")
+      catalog_cmd = "curl -s #{CONSUL_API_ENDPOINT}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'"
+      service_json_cluster = command(catalog_cmd)
       service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
-      health_cluster = command("curl -s #{CONSUL_API_ENDPOINT}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'")
+      health_cmd = "curl -s #{CONSUL_API_ENDPOINT}/health/service/#{serv_consul} | jq -r '.[].Checks[0].Status'"
+      health_cluster = command(health_cmd)
       health_cluster = health_cluster.stdout.chomp.split("\n")
       it 'Should be at least in one node' do
         # expect(service_json_cluster.size).to be > 0 # redundant check
@@ -47,8 +49,11 @@ describe "Checking #{service_status} service for #{service}..." do
 
     describe 'Checking consul sync address' do
       hostname = command('hostname').stdout.strip.split('.')[0]
-      sync_address = command("knife node show #{hostname} -l --attr ipaddress_sync | awk '/ipaddress_sync:/ {print $2}'").stdout.strip
-      ip_address = command("curl -s #{CONSUL_API_ENDPOINT}/catalog/service/#{serv_consul} | jq -r '.[0].Address'").stdout.strip
+      param = 'ipaddress_sync'
+      sync_address = command("knife node show #{hostname} -l --attr #{param} | awk '/#{param}:/ {print $2}'")
+      ip_address = command("curl -s #{CONSUL_API_ENDPOINT}/catalog/service/#{serv_consul} | jq -r '.[0].Address'")
+      sync_address = sync_address.stdout.strip
+      ip_address = ip_address.stdout.strip
       it 'should match sync address' do
         expect(ip_address).to eq(sync_address)
       end
