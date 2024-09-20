@@ -3,7 +3,8 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-pkg = usr = 'postgres'
+pkg = 'postgresql'
+usr = 'postgres'
 describe user(usr) do
   before(:all) do
     skip("Package #{pkg} is not installed") unless package(pkg).installed?
