@@ -3,7 +3,11 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-describe user('postgres') do
+pkg = usr = 'postgres'
+describe user(usr) do
+  before(:all) do
+    skip("Package #{pkg} is not installed") unless package(pkg).installed?
+  end
   it { should exist }
   it { should have_login_shell '/bin/bash' }
 end
