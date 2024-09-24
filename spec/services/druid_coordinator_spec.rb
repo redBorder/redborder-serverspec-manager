@@ -8,7 +8,7 @@ packages = %w[
   redborder-druid cookbook-druid druid
 ]
 service = 'druid-coordinator'
-api_endpoint = 'http://localhost:8500/v1'
+consul_api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking #{packages}" do
   packages.each do |package|
@@ -27,15 +27,36 @@ describe "Checking #{packages}" do
   end
 
   describe 'Registered in consul' do
-    service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
+    service_json_cluster = command("curl -s #{consul_api_endpoint}/catalog/service/#{service} | jq -c 'group_by(.ID)[]'")
     service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
-    health_cluster = command("curl -s #{api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
+    health_cluster = command("curl -s #{consul_api_endpoint}/health/service/#{service} | jq -r '.[].Checks[0].Status'")
     health_cluster = health_cluster.stdout.chomp.split("\n")
     service_and_health = service_json_cluster.zip(health_cluster)
     service_and_health.each do |srv, health|
       registered = JSON.parse(srv)[0].key?('Address') && health == 'passing' # ? true : false
       it 'Should be registered and enabled' do
         expect(registered).to be true
+      end
+    end
+  end
+
+  describe 'Druid should have at least one rule without forever duration' do
+    # Sample of wrong
+    # {"_default":[{"tieredReplicants":{"_default_tier":2},"type":"loadForever"}]}
+    # Sample of expected
+    # {"_default":[{"period":"P1M","tieredReplicants":{"_default_tier":1},"type":"loadByPeriod"},{"type":"dropForever"}]}
+
+    # TODO: make to all work together in cluster???
+    get_default_rules_cmd = "curl -X GET http://#{service}.service:8081/druid/coordinator/v1/rules/"
+    describe command(get_default_rules_cmd) do
+      its(:exit_status) { should eq 0 }
+      its(:stdout) { should_not be_empty }
+      it 'should have at least one rule without forever duration' do
+        rules = JSON.parse(subject.stdout)['_default']
+        non_forever_rule = rules.any? do |rule|
+          rule['type'] != 'loadForever' && rule['type'] != 'dropForever'
+        end
+        expect(non_forever_rule).to be true
       end
     end
   end
