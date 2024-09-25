@@ -15,7 +15,9 @@ describe 'Checking only these users has login permission' do
   allowed_users = Set.new %w[root redborder postgres minio]
   not_allowed_users = bash_users - allowed_users
 
-  it 'should only allow specified users to have login permissions' do
-    expect(not_allowed_users.to_a).to be_empty
+  describe 'users with login permissions' do
+    it 'should only allow specified users' do
+      expect(not_allowed_users.to_a).to be_empty, "Unexpected users with login permissions: #{not_allowed_users.to_a}"
+    end
   end
 end
