@@ -1,12 +1,12 @@
 ## redborder-serverspec-manager
-Infrastructure integration testing for redborder-manager
+Infrastructure integration testing for a redborder manager machine. The idea is to run the tests in a machine that is the validator local machine, so the target machine is affected by the tests.
 
 ## Installation
-On your workstation, execute the following command in your terminal:
+First, clone this repository on your workstation. Then install the gemes by executing this:
 ```ssh
 bundle install
 ```
-Also make sure to share your public ssh key to target machine:
+Sometimes you need to make sure that you share your public ssh key to target machine:
 ```
 ssh-copy-id root@<target_ip>
 ```
@@ -21,6 +21,7 @@ Optional parameters:
 * TARGET_HOST: Machine where the tests will run via SSH.
 * LOGIN_USERNAME: Username for SSH connection to the test machine.
 * LOGIN_PASSWORD: Password for SSH connection to the test machine.
+* IS_CLUSTER: Boolean to indicate if the target machine is a cluster.
 * -j 10 -m: To run tests in pararell
 Example with optional parameters:
 ```
