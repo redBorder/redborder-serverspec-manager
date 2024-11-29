@@ -5,11 +5,14 @@ require 'set'
 
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-# describe 'Check firewall public is defined' do
-#   describe command('firewall-cmd --get-active-zones') do
-#     its(:stdout) { should include 'public' }
-#   end
-# end
+describe 'Check zones are defined' do
+  zones = %w(public home)
+  zones.each do |zone|
+    describe file('/etc/firewalld/zones/#{zone}.xml') do
+      it { should exist }
+    end
+  end
+end
 
 describe 'Check if not allowed open ports in public zone are empty' do
   valid_public_ports = Set.new [
