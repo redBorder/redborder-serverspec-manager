@@ -4,12 +4,13 @@ require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 interfaces = command('ip link show | grep "^[0-9]" | cut -d" " -f2 | sed "s/:$//"').stdout.split("\n")
+interfaces = interfaces.reject { |interface| interface == 'lo' } # ignore loopback
 
 describe 'All interfaces: ' do
   interfaces.each do |interface|
     describe interface(interface) do
       it { should exist }
-      # it { should be_up }
+      it { should be_up }
     end
   end
 end
