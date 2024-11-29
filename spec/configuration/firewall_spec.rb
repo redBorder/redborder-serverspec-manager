@@ -8,9 +8,11 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 describe 'Check zones are defined' do
   zones = %w(public home)
   zones.each do |zone|
-    describe file('/etc/firewalld/zones/#{zone}.xml') do
-      it { should exist }
-    end
+    describe file("/etc/firewalld/zones/#{zone}.xml") do
+    it { should exist }
+    it { should be_owned_by 'root' }
+    it { should be_grouped_into 'root' }
+    # it { should be_mode 600 } # Ensures file is readable and writable by root only
   end
 end
 
