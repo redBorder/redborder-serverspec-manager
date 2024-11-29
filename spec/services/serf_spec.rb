@@ -11,6 +11,7 @@ packages = %w[
 service = 'serf'
 config_file = '/etc/serf/00first.json'
 port = 7946
+# port_mdns = 5353 # test is listening next time I build a cluster
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -39,6 +40,10 @@ if service_status == 'enabled'
     describe port(port) do
       it { should be_listening }
     end
+
+    # describe port(port_mdns) do
+    #   it { should be_listening }
+    # end
 
     describe file(config_file) do
       it { should exist }
