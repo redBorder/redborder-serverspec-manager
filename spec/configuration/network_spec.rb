@@ -31,7 +31,7 @@ describe 'Sync network' do
   sync = command('ip addr show').stdout
   it 'Have a network sync' do
     interfaces_with_ip = sync.scan(/inet\s+(\d+\.\d+\.\d+\.\d+)/).flatten
-    if ENV['IS_CLUSTER']
+    if ENV['IS_CLUSTER'] == 'true'
       expect(interfaces_with_ip.length).to be >= 3
     else
       skip 'One node does not need sync interface'
