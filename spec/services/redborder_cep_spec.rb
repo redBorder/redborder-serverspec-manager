@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-service = 'nfacctd'
-port = 2100
-service_status = command("systemctl is-enabled #{service}").stdout.strip
-packages = %w[cookbook-pmacct pmacct]
+packages = %w[
+  redborder-cep
+]
+
+service = 'redborder-cep'
+config_file = '/etc/redborder-cep/config.yml'
+port = 443
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -22,6 +26,9 @@ describe "Checking packages for #{service}..." do
   end
 end
 
+service_status = command("systemctl is-enabled #{service}").stdout
+service_status = service_status.strip
+
 if service_status == 'enabled'
   describe "Checking #{service_status} service for #{service}..." do
     describe service(service) do
@@ -32,9 +39,11 @@ if service_status == 'enabled'
     describe port(port) do
       it { should be_listening }
     end
-  end
-  describe file("/etc/pmacct/#{service}.conf") do
-    it { should exist }
+
+    describe file(config_file) do
+      it { should exist }
+      it { should be_file }
+    end
   end
 end
 
@@ -45,11 +54,8 @@ if service_status == 'disabled'
       it { should_not be_running }
     end
 
-    describe port(port) do
-      it { should_not be_listening }
+    describe file(config_file) do
+      it { should_not exist }
     end
-  end
-  describe file("/etc/pmacct/#{service}.conf") do
-    it { should_not exist }
   end
 end

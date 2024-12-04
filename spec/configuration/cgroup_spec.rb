@@ -36,3 +36,23 @@ describe 'Check cgroups config' do
     end
   end
 end
+
+describe file('/usr/lib/redborder/bin/rb_check_cgroups'), :rb_check_cgroups do
+  it { should exist }
+  it { should be_file }
+  it { should be_executable }
+end
+
+describe file('/usr/lib/redborder/bin/rb_check_cgroups.sh'), :rb_check_cgroups do
+  it { should exist }
+  it { should be_file }
+  it { should be_executable }
+end
+
+describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgroups do
+  it { should exist }
+  it { should be_file }
+  it { should be_executable.by(:owner) }
+  it { should be_executable.by(:group) }
+  its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
+end
