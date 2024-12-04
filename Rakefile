@@ -20,7 +20,7 @@ end
 
 namespace :spec do
   host = ENV['TARGET_HOST'] || '10.1.209.20'
-  task all: %i[services configuration]
+  task all: %i[services configuration users]
 
   desc 'run configuration tests'
   RSpec::Core::RakeTask.new(:configuration) do |t|
@@ -40,6 +40,13 @@ namespace :spec do
   RSpec::Core::RakeTask.new(:monitor_cluster) do |t|
     puts "Running Monitor tests on #{host} ..."
     t.pattern = 'spec/modules/monitor/*_spec.rb'
+    t.rspec_opts = '--format documentation'  # O "--format progress"
+  end
+
+  desc 'run user tests'
+  RSpec::Core::RakeTask.new(:users) do |t|
+    puts "Running user tests on #{host} ..."
+    t.pattern = 'spec/users/*_spec.rb'
     t.rspec_opts = '--format documentation'  # O "--format progress"
   end
 end

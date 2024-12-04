@@ -3,7 +3,7 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 packages = %w[
-  GeoIP GeoIP-GeoLite-data GeoIP-GeoLite-data-extra geoipupdate geoipupdate-cron
+  GeoIP GeoIP-GeoLite-data GeoIP-GeoLite-data-extra geoipupdate
 ]
 
 describe 'Checking geoip packages family' do
