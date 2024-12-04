@@ -14,6 +14,32 @@ describe 'All interfaces: ' do
   end
 end
 
+# Management network
+puts 'Configuration'
+
+ip = ENV['TARGET_HOST']
+puts "HOST: #{ip}"
+
+describe 'Management network' do
+  it 'The Management network should contain an IP' do
+    expect(ip).to match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
+  end
+end
+
+# Sync network
+describe 'Sync network' do
+  sync = command('ip addr show').stdout
+  it 'Have a network sync' do
+    interfaces_with_ip = sync.scan(/inet\s+(\d+\.\d+\.\d+\.\d+)/).flatten
+    if ENV['IS_CLUSTER']
+      expect(interfaces_with_ip.length).to be >= 3
+    else
+      skip 'One node does not need sync interface'
+    end
+    puts "OUTPUT: #{interfaces_with_ip}"
+  end
+end
+
 # DNS
 describe 'DNS' do
   resolv_content = command('cat /etc/resolv.conf').stdout
