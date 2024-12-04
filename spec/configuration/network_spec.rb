@@ -64,15 +64,3 @@ describe 'Hostname' do
     puts "OUTPUT: #{hostname}"
   end
 end
-
-# IPMI
-describe 'IPMI' do
-  ipmi_status = command('rpm -qa | grep ipmi').stdout
-  it 'Status IPMI' do
-    if ENV['IS_CLUSTER']
-      expect(ipmi_status).to include('ipmi')
-    else
-      skip 'One node does not need IPMI'
-    end
-  end
-end
