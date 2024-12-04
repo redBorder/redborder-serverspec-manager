@@ -10,7 +10,7 @@ packages = %w[
 
 service = 'redborder-cep'
 config_file = '/etc/redborder-cep/config.yml'
-port = 8888
+port = 443
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
