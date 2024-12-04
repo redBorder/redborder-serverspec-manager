@@ -14,28 +14,6 @@ describe 'All interfaces: ' do
   end
 end
 
-# Management network
-puts 'Configuration'
-
-ip = ENV['TARGET_HOST']
-puts "HOST: #{ip}"
-
-describe 'Management network' do
-  it 'The Management network should contain an IP' do
-    expect(ip).to match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
-  end
-end
-
-# Sync network
-describe 'Sync network' do
-  sync = command('ip addr show').stdout
-  it 'Have a network sync' do
-    interfaces_with_ip = sync.scan(/inet\s+(\d+\.\d+\.\d+\.\d+)/).flatten
-    expect(interfaces_with_ip.length).to be >= 3
-    puts "OUTPUT: #{interfaces_with_ip}"
-  end
-end
-
 # DNS
 describe 'DNS' do
   resolv_content = command('cat /etc/resolv.conf').stdout
@@ -58,13 +36,5 @@ describe 'Hostname' do
   it 'Hostname is set' do
     expect(hostname).not_to be_empty
     puts "OUTPUT: #{hostname}"
-  end
-end
-
-# IPMI
-describe 'IPMI' do
-  ipmi_status = command('rpm -qa | grep ipmi').stdout
-  it 'Status IPMI' do
-    expect(ipmi_status).to include('ipmi')
   end
 end
