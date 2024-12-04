@@ -42,4 +42,11 @@ namespace :spec do
     t.pattern = 'spec/modules/monitor/*_spec.rb'
     t.rspec_opts = '--format documentation'  # O "--format progress"
   end
+
+  desc 'run user tests'
+  RSpec::Core::RakeTask.new(:users) do |t|
+    puts "Running user tests on #{host} ..."
+    t.pattern = 'spec/users/*_spec.rb'
+    t.rspec_opts = '--format documentation'  # O "--format progress"
+  end
 end
