@@ -6,6 +6,7 @@ set :os, family: 'redhat', release: '9', arch: 'x86_64'
 service = 'crond'
 service_status = command("systemctl is-enabled #{service}").stdout.strip
 packages = %w[cronie]
+port = 123
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
@@ -27,6 +28,10 @@ if service_status == 'enabled'
       it { should be_enabled }
       it { should be_running }
     end
+  end
+
+  describe port(port) do
+    it { should be_listening }
   end
 end
 
