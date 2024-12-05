@@ -20,7 +20,7 @@ end
 describe 'Check if not allowed open ports in public zone are empty' do
   valid_public_ports = Set.new [
     '443/tcp',    #(HTTPS)
-    #We don't know why this should be open. Remove?. Found references in our code mention pfring and snort
+    #We don't know why 5353 should be open. Remove?. Found references in our code mention pfring and snort
     '5353/udp',   #(mDNS / Serf)
     '2055/udp',   #(f2k)
     '6343/udp',   #(sfacctd/pmacctd)
@@ -47,6 +47,7 @@ describe 'Check if not allowed open ports in public zone are empty' do
     unless not_allowed_open_public.empty?
       fail "Not allowed open ports in public zone: #{not_allowed_open_public.to_a.join(', ')}"
     end
+
     expect(not_allowed_open_public).to be_empty
   end
-end 
+end
