@@ -67,15 +67,10 @@ describe "Checking #{service_status} service for #{service}..." do
       it { should_not be_running }
     end
 
-    # Cannot disable consul, so test if you can and uncomment
-    # in case of successful test
-    # ports.each do |p|
-    #   describe port(p) do
-    #     it { should_not be_listening }
-    #   end
-    # end
-    describe port(8300) do
-      it { should_not be_listening }
+    ports.each do |p|
+      describe port(p) do
+        it { should_not be_listening }
+      end
     end
   end
 end
