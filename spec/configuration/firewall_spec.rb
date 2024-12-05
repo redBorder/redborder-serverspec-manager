@@ -20,7 +20,7 @@ end
 describe 'Check existence of not allowed open ports' do
   valid_ports = Set.new [
     '443/tcp',    # (HTTPS)
-    #We don't know why 5353 should be open. Remove?. Found references in our code mention pfring and snort
+    # We don't know why 5353 should be open. Remove?. Found references in our code mention pfring and snort
     '5353/udp',   # (mDNS / Serf)
     '2055/udp',   # (f2k)
     '6343/udp',   # (sfacctd/pmacctd)
