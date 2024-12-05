@@ -19,7 +19,7 @@ end
 
 describe 'Check existence of not allowed open ports' do
   valid_ports = Set.new [
-    '443/tcp',    # (HTTPS)
+    '443/tcp', # (HTTPS)
     # We don't know why 5353 should be open. Remove?. Found references in our code mention pfring and snort
     '5353/udp',   # (mDNS / Serf)
     '2055/udp',   # (f2k)
@@ -49,7 +49,7 @@ describe 'Check existence of not allowed open ports' do
         skip "Not allowed open ports in public zone: #{not_allowed_open.to_a.join(', ')}"
       end
 
-      expect(not_allowed_open).to be_empty  # This can be blocky.
+      expect(not_allowed_open).to be_empty # This can be blocky.
     end
   end
 
@@ -83,7 +83,7 @@ describe 'Check existence of not allowed open ports' do
       '9092/tcp',   # (kafka)
       '11211/tcp',  # (memcached)
       '11211/udp',  # (memcached)
-      '27017/tcp',  # (mongodb)
+      '27017/tcp'   # (mongodb)
     ]
 
     open_ports = command('firewall-cmd --zone=home --list-ports')
@@ -94,6 +94,7 @@ describe 'Check existence of not allowed open ports' do
 
     it 'should not have any not allowed open ports in home zone' do
       unless not_allowed_open.empty?
+        # 'fail' can be blocky, so we use 'skip' instead.
         skip "Not allowed open ports in home zone: #{not_allowed_open.to_a.join(', ')}"
       end
 
