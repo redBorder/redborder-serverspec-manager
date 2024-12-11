@@ -9,7 +9,7 @@ packages = %w[
 ]
 
 service = 'consul'
-port = 8300
+ports = [8300, 8301, 8302, 8500]
 api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
@@ -29,15 +29,17 @@ end
 service_status = command("systemctl is-enabled #{service}").stdout
 service_status = service_status.strip
 
-if service_status == 'enabled'
-  describe "Checking #{service_status} service for #{service}..." do
+describe "Checking #{service_status} service for #{service}..." do
+  if service_status == 'enabled'
     describe service(service) do
       it { should be_enabled }
       it { should be_running }
     end
 
-    describe port(port) do
-      it { should be_listening }
+    ports.each do |p|
+      describe port(p) do
+        it { should be_listening }
+      end
     end
 
     # Use this block to test other services that need to be registered in consul
@@ -58,17 +60,17 @@ if service_status == 'enabled'
       end
     end
   end
-end
 
-if service_status == 'disabled'
-  describe "Checking #{service_status} service for #{service}..." do
+  if service_status == 'disabled'
     describe service(service) do
       it { should_not be_enabled }
       it { should_not be_running }
     end
 
-    describe port(port) do
-      it { should_not be_listening }
+    ports.each do |p|
+      describe port(p) do
+        it { should_not be_listening }
+      end
     end
   end
 end
