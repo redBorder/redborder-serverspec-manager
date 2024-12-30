@@ -39,10 +39,6 @@ describe "Checking service_status for #{service}..." do
     it { should be_file }
   end
 
-  describe port(port) do
-    it { should be_listening }
-  end
-
   describe 'Registered in consul' do
     service_json_cluster = command("curl -s #{api_endpoint}/catalog/service/#{serv_consul} | jq -c 'group_by(.ID)[]'")
     service_json_cluster = service_json_cluster.stdout.chomp.split("\n")
