@@ -14,7 +14,7 @@ describe "Checking service status for #{service}..." do
       failed_status = command("systemctl is-failed #{service}").exit_status
       it { expect(failed_status).to eq(1) } # 1 has finished with success
     elsif active_state == 'active'
-    # On setup the service has to be active
+      # On setup the service has to be active
       # it { should be_enabled }
       it { expect(active_status).to eq(0) } # 0 is running
     end
