@@ -5,7 +5,7 @@ require 'set'
 require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-service = serv_consul = pkg = 'redborder-ai'
+service = serv_consul = pkg = 'redborder-llm'
 CONSUL_API_ENDPOINT = 'http://localhost:8500/v1'
 describe "Checking packages for #{service}..." do
   describe package(pkg) do
