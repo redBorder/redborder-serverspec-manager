@@ -8,8 +8,8 @@ packages = %w[
   redborder-druid cookbook-druid druid
 ]
 
-service = 'druid-realtime'
-port = 8084
+service = 'druid-indexer'
+port = 8089
 api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
