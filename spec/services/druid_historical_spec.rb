@@ -34,7 +34,7 @@ if service_status == 'enabled'
       it { should be_listening }
     end
 
-    describe file('/usr/lib/druid/conf/druid/historical/jvm.config') do
+    describe file('/etc/sysconfig/druid_historical') do
       it { should exist }
     end
 
