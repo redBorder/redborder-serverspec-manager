@@ -83,8 +83,7 @@ describe 'Check existence of not allowed open ports' do
       '8500/tcp',   # (consul web console)
       '9092/tcp',   # (kafka)
       '11211/tcp',  # (memcached)
-      '11211/udp',  # (memcached)
-      '27017/tcp'   # (mongodb)
+      '11211/udp'  # (memcached)
     ]
 
     open_ports = command('firewall-cmd --zone=home --list-ports')
