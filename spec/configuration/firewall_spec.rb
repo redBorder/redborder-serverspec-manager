@@ -57,6 +57,7 @@ describe 'Check existence of not allowed open ports' do
     valid_ports += Set.new [
       '53/tcp',     # large DNS
       '53/udp',     # short DNS
+      '112/tcp',    # (vrrp)
       '2181/tcp',   # (zookeeper client)
       '2888/tcp',   # (zookeeper followers)
       '3888/tcp',   # (zookeeper leader election)
