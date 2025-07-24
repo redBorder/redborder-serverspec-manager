@@ -10,7 +10,6 @@ packages = %w[
 
 service = 'chef-client'
 config_file = '/etc/chef/client.rb'
-# port = 4443
 serv_consul = 'erchef'
 api_endpoint = 'http://localhost:8500/v1'
 
