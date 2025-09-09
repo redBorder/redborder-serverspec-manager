@@ -19,8 +19,8 @@ end
 
 describe 'Check existence of not allowed open ports' do
   valid_ports = Set.new [
+    '80/tcp', # (HTTP)
     '443/tcp', # (HTTPS)
-    # We don't know why 5353 should be open. Remove?. Found references in our code mention pfring and snort
     '5353/udp',   # (mDNS / Serf)
     '2055/udp',   # (f2k)
     '6343/udp',   # (sfacctd/pmacctd)
@@ -60,6 +60,10 @@ describe 'Check existence of not allowed open ports' do
       '112/tcp',    # (vrrp)
       '2181/tcp',   # (zookeeper client)
       '2888/tcp',   # (zookeeper followers)
+      '3000/tcp',   # (aerospike)
+      '3001/tcp',   # (aerospike)
+      '3002/tcp',   # (aerospike)
+      '3003/tcp',   # (aerospike)
       '3888/tcp',   # (zookeeper leader election)
       '50505/tcp',  # (zookeeper admin)
       '5432/tcp',   # (postgresql)
@@ -73,6 +77,9 @@ describe 'Check existence of not allowed open ports' do
       '8082/tcp',   # (druid broker)
       '8080/tcp',   # (general internal http)
       '8089/tcp',   # (druid indexer)
+      '8090/tcp',   # (druid overloard)
+      '8091/tcp',   # (druid middlemanager)
+      '8888/tcp',   # (druid router)
       '9000/tcp',   # (minio API)
       '9001/tcp',   # (minio console)
       '8300/tcp',   # (consul RPC)
@@ -84,7 +91,10 @@ describe 'Check existence of not allowed open ports' do
       '8500/tcp',   # (consul web console)
       '9092/tcp',   # (kafka)
       '11211/tcp',  # (memcached)
-      '11211/udp' # (memcached)
+      '11211/udp', # (memcached)
+      '11434/tcp', # (redborder-agents)
+      '26379/tcp', # (redis)
+      '26380/tcp' # (redis-sentinel)
     ]
 
     open_ports = command('firewall-cmd --zone=home --list-ports')
