@@ -28,7 +28,7 @@ end
 service_status = command("systemctl is-enabled #{service}").stdout
 service_status = service_status.strip
 
-if service_status == 'enabled'
+if ENV['IS_CLUSTER'] != 'false' && service_status == 'enabled'
   describe service(service) do
     it { should be_enabled }
     it { should be_running }
