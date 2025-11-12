@@ -34,7 +34,9 @@ describe 'Check existence of not allowed open ports' do
     '2058/tcp',   # (n2klocd)
     '161/udp',    # (snmp)
     '162/udp',    # (snmp)
-    '123/udp'     # (chrony)
+    '123/udp',    # (chrony)
+    '7777/tcp',   # (rb-reputation)
+    '9191/tcp'    # (airflow-webserver)
   ]
   describe 'Check existence of not allowed open ports in public zone' do
     open_ports = command('firewall-cmd --zone=public --list-ports')
@@ -91,10 +93,12 @@ describe 'Check existence of not allowed open ports' do
       '8500/tcp',   # (consul web console)
       '9092/tcp',   # (kafka)
       '11211/tcp',  # (memcached)
-      '11211/udp', # (memcached)
-      '11434/tcp', # (redborder-agents)
-      '26379/tcp', # (redis)
-      '26380/tcp' # (redis-sentinel)
+      '11211/udp',  # (memcached)
+      '11434/tcp',  # (redborder-agents)
+      '26379/tcp',  # (redis)
+      '26380/tcp',  # (redis-sentinel)
+      '7777/tcp',   # (rb-reputation)
+      '9191/tcp'    # (airflow-webserver)
     ]
 
     open_ports = command('firewall-cmd --zone=home --list-ports')
