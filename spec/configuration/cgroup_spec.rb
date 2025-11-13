@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
+require 'set'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
 cgroups = command('find /sys/fs/cgroup/redborder.slice -type d -name "redborder-*" -not -name "*.service"').stdout.split
@@ -55,4 +56,34 @@ describe file('/usr/lib/redborder/scripts/rb_check_cgroups.rb'), :rb_check_cgrou
   it { should be_executable.by(:owner) }
   it { should be_executable.by(:group) }
   its(:content) { should match(%r{^(\s*#.*|)#!/usr/bin/env\s+ruby.*$}) }
+end
+
+hostname = command('hostname -s')
+excluded_memory_services = command("knife node show #{hostname} -l -F json | " \
+                                   "jq '.default.redborder.excluded_memory_services | keys[]'").split("\n")
+
+describe 'Check excluded memory service' do
+  it 'Check chef-client is a excluded memory service' do
+    expect(excluded_memory_services).to include('chef-client')
+  end
+
+  excluded_memory_services.each do |service|
+    describe command("systemctl show --property Slice --value #{service}") do
+      its('stdout') { should eq 'system.slice' }
+    end
+  end
+end
+
+memory_services = command("knife node show #{hostname} -l -F json | " \
+                          "jq '.default.redborder.memory_services | keys[]'").split("\n")
+[memory_services, excluded_memory_services].map! { |array| Set.new(array) }
+non_excluded_serv = memory_services.difference(excluded_memory_services)
+
+describe 'Checking Slices of Non Excluded Memory Services' do
+  non_excluded_serv.each do |service|
+    describe command("systemctl show --property Slice --value #{service}") do
+      no_dash = service.gsub('-', '')
+      its('stdout') { should eq "redborder-#{no_dash}.slice" }
+    end
+  end
 end
