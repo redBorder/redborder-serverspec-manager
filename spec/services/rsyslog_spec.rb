@@ -54,7 +54,7 @@ if service_status == 'enabled'
     end
 
     describe 'Configuration files and directories' do
-      [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
+      [config_directory, *files.map { |file| "#{config_directory}#{file}" }].each do |file_path|
         describe file(file_path) do
           it { should exist }
           it { should send(File.directory?(file_path) ? :be_directory : :be_file) }
@@ -80,7 +80,7 @@ if service_status == 'disabled'
     end
 
     describe 'Configuration files and directories' do
-      [config_directory, *files.map { |file| "#{config_directory}/#{file}" }].each do |file_path|
+      [config_directory, *files.map { |file| "#{config_directory}#{file}" }].each do |file_path|
         describe file(file_path) do
           it { should_not exist }
         end
