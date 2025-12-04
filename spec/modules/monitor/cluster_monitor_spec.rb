@@ -27,7 +27,6 @@ describe 'Logstash Configurations' do
     end
   end
 
-  # Pipeline only necessary if namespaces exist
   # describe file('/etc/logstash/pipelines.yml') do
   #   it { should contain 'pipeline.id: monitor-pipeline' }
   #   it { should contain 'path.config: "/etc/logstash/pipelines/monitor"' }
@@ -35,9 +34,9 @@ describe 'Logstash Configurations' do
 end
 
 describe 'Druid Configurations' do
-  describe file('/etc/druid/realtime/rb_realtime.spec') do
+  describe file('/etc/rb-druid-indexer/config.yml') do
     it { should exist }
-    its(:content) { should match(/"dataSource":\s*"rb_monitor"/) }
+    its(:content) { should match(/task_name:\s*["']?rb_monitor["']?/) }
   end
 end
 
