@@ -27,10 +27,11 @@ describe 'Logstash Configurations' do
     end
   end
 
-  describe file('/etc/logstash/pipelines.yml') do
-    it { should contain 'pipeline.id: monitor-pipeline' }
-    it { should contain 'path.config: "/etc/logstash/pipelines/monitor"' }
-  end
+  # Pipeline only necessary if namespaces exist
+  # describe file('/etc/logstash/pipelines.yml') do
+  #   it { should contain 'pipeline.id: monitor-pipeline' }
+  #   it { should contain 'path.config: "/etc/logstash/pipelines/monitor"' }
+  # end
 end
 
 describe 'Druid Configurations' do
@@ -40,10 +41,9 @@ describe 'Druid Configurations' do
   end
 end
 
-describe 'Temporary Realtime Monitor Files' do
-  describe command('ls /tmp/realtime/rb_monitor') do
-    its(:exit_status) { should eq 0 }
-  end
+describe command("find /var/druid/task/ -type d -path '*/index_kafka_rb_monitor*/work/indexing-tmp'") do
+  its(:stdout) { should include 'indexing-tmp' }
+  its(:exit_status) { should eq 0 }
 end
 
 # describe 'Kafka Data Consumption' do
