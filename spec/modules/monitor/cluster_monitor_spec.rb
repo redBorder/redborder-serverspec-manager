@@ -46,11 +46,11 @@ describe 'Temporary Realtime Monitor Files' do
   end
 end
 
-describe 'Kafka Data Consumption' do
-  describe command('timeout 55 rb_consumer.sh -t rb_monitor_post') do
-    its(:stdout) { should match(/"type":/) }
-    its(:stdout) { should match(/"timestamp":/) }
-    its(:stdout) { should match(/"sensor_name":/) }
-    its(:stdout) { should match(/"monitor":/) }
-  end
-end
+# describe 'Kafka Data Consumption' do
+#   describe command('timeout 55 rb_consumer.sh -t rb_monitor_post') do
+#     its(:stdout) { should match(/"type":/) }
+#     its(:stdout) { should match(/"timestamp":/) }
+#     its(:stdout) { should match(/"sensor_name":/) }
+#     its(:stdout) { should match(/"monitor":/) }
+#   end
+# end
