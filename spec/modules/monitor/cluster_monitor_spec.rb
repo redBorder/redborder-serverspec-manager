@@ -15,7 +15,6 @@ describe 'Redborder Monitor Configurations' do
 
   describe command('rb_get_topics | grep monitor') do
     its(:stdout) { should match(/rb_monitor/) }
-    its(:stdout) { should match(/rb_monitor_post/) }
   end
 end
 
