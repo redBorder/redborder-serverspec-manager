@@ -4,7 +4,7 @@ require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 pipelines = %w[
   rb_event rb_event_post
-  rb_monitor
+  rb_monitor rb_monitor_post
   rb_loc rb_locne rb_loc_post rb_loc_post_discard rb_location
   rb_mobile
   rb_radius
