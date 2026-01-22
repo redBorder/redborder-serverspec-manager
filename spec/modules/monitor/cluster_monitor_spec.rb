@@ -27,10 +27,10 @@ describe 'Logstash Configurations' do
     end
   end
 
-  # describe file('/etc/logstash/pipelines.yml') do
-  #   it { should contain 'pipeline.id: monitor-pipeline' }
-  #   it { should contain 'path.config: "/etc/logstash/pipelines/monitor"' }
-  # end
+  describe file('/etc/logstash/pipelines.yml') do
+    it { should contain 'pipeline.id: monitor-pipeline' }
+    it { should contain 'path.config: "/etc/logstash/pipelines/monitor"' }
+  end
 end
 
 describe 'Druid Configurations' do
