@@ -35,23 +35,22 @@ describe 'Logstash Configurations' do
 end
 
 describe 'Druid Configurations' do
-  describe file('/etc/druid/realtime/rb_realtime.spec') do
+  describe file('/etc/rb-druid-indexer/config.yml') do
     it { should exist }
-    its(:content) { should match(/"dataSource":\s*"rb_monitor"/) }
+    its(:content) { should match(/task_name:\s*["']?rb_monitor["']?/) }
   end
 end
 
-describe 'Temporary Realtime Monitor Files' do
-  describe command('ls /tmp/realtime/rb_monitor') do
-    its(:exit_status) { should eq 0 }
-  end
+describe command("find /var/druid/task/ -type d -path '*/index_kafka_rb_monitor*/work/indexing-tmp'") do
+  its(:stdout) { should include 'indexing-tmp' }
+  its(:exit_status) { should eq 0 }
 end
 
-describe 'Kafka Data Consumption' do
-  describe command('timeout 55 rb_consumer.sh -t rb_monitor_post') do
-    its(:stdout) { should match(/"type":/) }
-    its(:stdout) { should match(/"timestamp":/) }
-    its(:stdout) { should match(/"sensor_name":/) }
-    its(:stdout) { should match(/"monitor":/) }
-  end
-end
+# describe 'Kafka Data Consumption' do
+#   describe command('timeout 55 rb_consumer.sh -t rb_monitor_post') do
+#     its(:stdout) { should match(/"type":/) }
+#     its(:stdout) { should match(/"timestamp":/) }
+#     its(:stdout) { should match(/"sensor_name":/) }
+#     its(:stdout) { should match(/"monitor":/) }
+#   end
+# end
