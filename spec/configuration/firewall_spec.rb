@@ -98,7 +98,8 @@ describe 'Check existence of not allowed open ports' do
       '26379/tcp',  # (redis)
       '26380/tcp',  # (redis-sentinel)
       '7777/tcp',   # (rb-reputation)
-      '9191/tcp'    # (airflow-webserver)
+      '9191/tcp',   # (airflow-webserver)
+      '8478/tcp'    # (CEP)
     ]
 
     open_ports = command('firewall-cmd --zone=home --list-ports')
