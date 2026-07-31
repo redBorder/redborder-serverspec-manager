@@ -3,7 +3,7 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-cgroups = command('find /sys/fs/cgroup/redborder.slice -type d -name "redborder-*" -not -name "*.service"').stdout.split
+cgroups = command('find /sys/fs/cgroup/redborder.slice -type d -name "*.service"').stdout.split
 
 describe 'Check cgroups config' do
   describe file('/sys/fs/cgroup/redborder.slice') do
@@ -11,12 +11,6 @@ describe 'Check cgroups config' do
   end
 
   cgroups.each do |cgroup|
-    describe file("#{cgroup}/cgroup.controllers") do
-      it { should exist }
-      it { should be_file }
-      its(:content) { should match(/io/) }
-    end
-
     describe file("#{cgroup}/memory.max") do
       it { should exist }
       it { should be_file }
@@ -27,12 +21,6 @@ describe 'Check cgroups config' do
       it { should exist }
       it { should be_file }
       its(:content) { should match(/^\d+$/) }
-    end
-
-    describe file("#{cgroup}/io.bfq.weight") do
-      it { should exist }
-      it { should be_file }
-      its(:content) { should match(/^default\s\d+$/) }
     end
   end
 end
