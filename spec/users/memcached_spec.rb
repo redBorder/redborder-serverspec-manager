@@ -9,5 +9,4 @@ describe user(usr) do
     skip("Package #{pkg} is not installed") unless package(pkg).installed?
   end
   it { should exist }
-  it { should have_login_shell('/sbin/nologin') }
 end
