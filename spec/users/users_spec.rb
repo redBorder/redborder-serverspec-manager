@@ -12,7 +12,7 @@ describe 'Checking only these users has login permission' do
   bash_users.map! { |p| p.split(':').first }
   bash_users = Set.new bash_users
 
-  allowed_users = Set.new %w[root redborder postgres minio malware redborder-alarm-engine]
+  allowed_users = Set.new %w[root redborder postgres minio malware]
   not_allowed_users = bash_users - allowed_users
 
   describe 'users with login permissions' do
@@ -20,4 +20,13 @@ describe 'Checking only these users has login permission' do
       expect(not_allowed_users.to_a).to be_empty, "Unexpected users with login permissions: #{not_allowed_users.to_a}"
     end
   end
+end
+
+describe user('redborder-alarm-engine') do
+  before(:all) do
+    skip('Package redborder-alarm-engine is not installed') unless package('redborder-alarm-engine').installed?
+  end
+
+  it { should exist }
+  it { should have_login_shell('/sbin/nologin') }
 end
