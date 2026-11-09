@@ -48,7 +48,11 @@ describe 'Redis reads its password from memory' do
   describe file('/run/rb-secrets/redis/auth.conf') do
     it { should be_mode 640 }
     it { should be_grouped_into 'redis' }
-    it { should contain(/^requirepass \h{64}$/) }
+  end
+
+  # Count only: a failing content match would print the password
+  describe command("grep -cE '^requirepass [0-9a-f]{64}$' /run/rb-secrets/redis/auth.conf") do
+    its(:stdout) { should eq "1\n" }
   end
 
   describe service('redis') do
@@ -63,7 +67,7 @@ describe 'Memory stays off disk' do
 
   describe command('cryptsetup status swap') do
     its(:stdout) { should match(/cipher:\s+aes-xts-plain64/) }
-    its(:stdout) { should match(/keysize:\s+512 bits/) }
+    its(:stdout) { should match(/keysize:\s+512 \[bits\]/) }
   end
 
   describe file('/proc/cmdline') do
