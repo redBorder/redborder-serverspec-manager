@@ -73,6 +73,8 @@ describe 'Check existence of not allowed open ports' do
       '7946/udp',   # (serf)
       '4443/tcp',   # (erchef)
       '7980/tcp',   # (http2k)
+      '7983/tcp',   # (f2k /health, keepalived checks)
+      '7984/tcp',   # (sfacctd /health, keepalived checks)
       '8001/tcp',   # (consul)
       '8081/tcp',   # (druid coordinator)
       '8083/tcp',   # (druid historical)
