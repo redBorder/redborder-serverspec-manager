@@ -27,7 +27,7 @@ describe 'OpenBao' do
   end
 
   # Sync network API (no TLS, decision M3 B): the Consul check and joining managers use it; standbys answer 200 too
-  describe command(%q(curl -s -o /dev/null -w '%{http_code}' "$(sed -n 's/^api_addr *= *"\(.*\)"/\1/p' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true")) do
+  describe command(%q|curl -s -o /dev/null -w '%{http_code}' "$(awk -F'"' '/^api_addr/{print $2}' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true"|) do
     its(:stdout) { should eq '200' }
   end
 end
