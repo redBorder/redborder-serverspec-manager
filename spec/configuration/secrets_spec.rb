@@ -50,8 +50,9 @@ describe 'Redis reads its password from memory' do
     it { should be_grouped_into 'redis' }
   end
 
-  # Count only: a failing content match would print the password
-  describe command("grep -cE '^requirepass [0-9a-f]{64}$' /run/rb-secrets/redis/auth.conf") do
+  # Count only: a failing content match would print the password. Any long value: new installs get 64 hex
+  # characters from rb_openbao init, migrated installs keep their old password.
+  describe command("grep -cE '^requirepass [[:alnum:]]{32,}$' /run/rb-secrets/redis/auth.conf") do
     its(:stdout) { should eq "1\n" }
   end
 
