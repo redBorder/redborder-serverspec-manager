@@ -26,9 +26,9 @@ describe 'OpenBao' do
     its(:content) { should eq 'ok' }
   end
 
-  describe file('/run/openbao/tls.key') do
-    it { should be_mode 600 }
-    it { should be_owned_by 'openbao' }
+  # Sync network API (no TLS, decision M3 B): the Consul check and joining managers use it; standbys answer 200 too
+  describe command(%q(curl -s -o /dev/null -w '%{http_code}' "$(sed -n 's/^api_addr *= *"\(.*\)"/\1/p' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true")) do
+    its(:stdout) { should eq '200' }
   end
 end
 
@@ -58,6 +58,11 @@ describe 'Redis reads its password from memory' do
 
   describe service('redis') do
     it { should be_running }
+  end
+
+  # Redis/Sentinel config rewrites (failover) must not put the password into /etc/redis
+  describe command("grep -rlE '^(requirepass|masterauth|sentinel auth-pass) ' /etc/redis") do
+    its(:stdout) { should eq '' }
   end
 end
 
