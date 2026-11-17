@@ -80,9 +80,13 @@ describe 'Memory stays off disk' do
     its(:content) { should_not match(/resume=/) }
   end
 
-  describe service('kdump') do
-    it { should_not be_running }
-    it { should_not be_enabled }
+  # kdump may run, but must only save the kernel log, never a memory image
+  describe command("grep '^core_collector ' /etc/kdump.conf 2>/dev/null || echo none") do
+    its(:stdout) { should match(/\A(core_collector makedumpfile --dump-dmesg|none)\n\z/) }
+  end
+
+  describe command('find /var/crash -name vmcore -size +10M 2>/dev/null | wc -l') do # a kernel log is fine, a RAM image is not
+    its(:stdout) { should match(/^0$/) }
   end
 
   describe command('systemd-analyze cat-config systemd/coredump.conf') do
