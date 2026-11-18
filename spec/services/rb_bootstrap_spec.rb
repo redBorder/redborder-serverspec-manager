@@ -14,9 +14,16 @@ describe "Checking service status for #{service}..." do
       it { should_not be_enabled }
     end
 
-    it "is expected to be in a state of 'active (exited)'" do
-      expect(command("systemctl show -p ActiveState --value #{service}").stdout.strip).to eq 'active'
-      expect(command("systemctl show -p SubState --value #{service}").stdout.strip).to eq 'exited'
+    # rb-bootstrap runs once (RemainAfterExit): it stays 'active (exited)' until the node
+    # is rebooted, after that it is 'inactive (dead)'. Both are fine, a failed run is not.
+    it "is expected to be 'active (exited)' or 'inactive (dead)'" do
+      active_state = command("systemctl show -p ActiveState --value #{service}").stdout.strip
+      sub_state = command("systemctl show -p SubState --value #{service}").stdout.strip
+      expect("#{active_state} (#{sub_state})").to eq('active (exited)').or eq('inactive (dead)')
+    end
+
+    it 'is expected not to have failed' do
+      expect(command("systemctl show -p Result --value #{service}").stdout.strip).to eq 'success'
     end
   end
 end
