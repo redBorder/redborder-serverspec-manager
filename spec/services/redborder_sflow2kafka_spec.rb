@@ -35,11 +35,11 @@ if service_status == 'enabled'
     end
 
     describe port(port) do
-      it { should be_listening.with('udp') }
+      it { should be_listening }
     end
 
     describe port(stats_port) do
-      it { should be_listening.with('tcp') }
+      it { should be_listening }
     end
 
     describe file(config_file) do
