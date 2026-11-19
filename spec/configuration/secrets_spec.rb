@@ -73,6 +73,14 @@ describe 'Memory stays off disk' do
     its(:stdout) { should match(/keysize:\s+512 \[bits\]/) }
   end
 
+  describe command('swapon --show=NAME --noheadings | wc -l') do
+    its(:stdout) { should_not match(/^0$/) }
+  end
+
+  describe service('rb-swap') do
+    it { should be_enabled }
+  end
+
   describe file('/proc/cmdline') do
     its(:content) { should_not match(/resume=/) }
   end
