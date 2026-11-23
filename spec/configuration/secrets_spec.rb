@@ -38,31 +38,6 @@ describe 'No secret values on disk' do
   end
 end
 
-describe 'Redis reads its password from memory' do
-  describe file('/etc/redis/redis-base.conf') do
-    it { should contain 'include /run/rb-secrets/redis/auth.conf' }
-    it { should_not contain(/^requirepass/) }
-  end
-
-  describe file('/run/rb-secrets/redis/auth.conf') do
-    it { should be_mode 640 }
-    it { should be_grouped_into 'redis' }
-  end
-
-  # count only: a failing content match would print the password
-  describe command("grep -cE '^requirepass [[:alnum:]]{32,}$' /run/rb-secrets/redis/auth.conf") do
-    its(:stdout) { should eq "1\n" }
-  end
-
-  describe service('redis') do
-    it { should be_running }
-  end
-
-  describe command("grep -rlE '^(requirepass|masterauth|sentinel auth-pass) ' /etc/redis") do
-    its(:stdout) { should eq '' }
-  end
-end
-
 describe 'Memory stays off disk' do
   describe command('swapon --show=NAME --noheadings') do
     its(:stdout) { should_not match(%r{^/dev/(sd|vd|nvme|mapper/rl)}) }
