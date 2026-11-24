@@ -21,8 +21,9 @@ describe 'OpenBao' do
     its(:stdout) { should match(/"sealed": false/) }
   end
 
-  describe file('/run/openbao-agent/canary') do
-    its(:content) { should eq 'ok' }
+  # the agent is logged in and renders service secrets into memory
+  describe command('find /run/rb-secrets -type f -size +0c | wc -l') do
+    its(:stdout) { should_not match(/^0$/) }
   end
 
   # standbys answer 200 too
