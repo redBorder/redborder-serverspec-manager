@@ -3,11 +3,12 @@
 require 'spec_helper'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
-pkg = usr = 'minio'
+pkg = 'redborder-seaweedfs'
+usr = 'seaweedfs'
 describe user(usr) do
   before(:all) do
     skip("Package #{pkg} is not installed") unless package(pkg).installed?
   end
   it { should exist }
-  it { should have_login_shell('/bin/bash') }
+  it { should have_login_shell('/sbin/nologin') }
 end
