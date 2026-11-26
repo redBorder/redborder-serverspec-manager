@@ -30,6 +30,16 @@ describe 'OpenBao' do
   describe command(%q|curl -s -o /dev/null -w '%{http_code}' "$(awk -F'"' '/^api_addr/{print $2}' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true"|) do
     its(:stdout) { should eq '200' }
   end
+
+  describe file('/etc/redborder-hub/hub.json') do
+    it { should be_symlink }
+    it { should be_linked_to '/run/rb-secrets/redborder-hub/hub.json' }
+  end
+
+  describe file('/etc/logstash/pipelines/vault/01_generic.conf'), if: File.directory?('/etc/logstash/pipelines/vault') do
+    it { should be_symlink }
+    it { should be_linked_to '/run/rb-secrets/logstash/vault-generic.conf' }
+  end
 end
 
 describe 'No secret values on disk' do
