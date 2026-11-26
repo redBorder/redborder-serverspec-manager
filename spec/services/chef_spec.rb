@@ -4,8 +4,14 @@ require 'spec_helper'
 require 'json'
 set :os, family: 'redhat', release: '9', arch: 'x86_64'
 
+# Cinc (Apache 2.0 build of Chef): client on every manager
 packages = %w[
-  redborder-chef-server cookbook-chef-server
+  redborder-cinc-client cinc-workstation
+]
+
+# Cinc Server: only on the managers with the chef-server service
+server_packages = %w[
+  redborder-cinc-server cinc-server-core cookbook-cinc-server
 ]
 
 service = 'chef-client'
@@ -15,6 +21,14 @@ api_endpoint = 'http://localhost:8500/v1'
 
 describe "Checking packages for #{service}..." do
   packages.each do |package|
+    describe package(package) do
+      it 'is expected to be installed' do
+        expect(package(package).installed?).to be true
+      end
+    end
+  end
+
+  server_packages.each do |package|
     describe package(package) do
       before do
         skip("#{package} is not installed, skipping...") unless package(package).installed?
