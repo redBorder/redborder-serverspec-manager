@@ -1,0 +1,92 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+set :os, family: 'redhat', release: '9', arch: 'x86_64'
+
+# No credentials or keys in plaintext on persistent storage.
+
+describe 'OpenBao' do
+  describe service('openbao') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+
+  describe service('openbao-agent') do
+    it { should be_enabled }
+    it { should be_running }
+  end
+
+  describe command('BAO_ADDR=unix:///run/openbao/openbao.sock bao status -format=json') do
+    its(:stdout) { should match(/"initialized": true/) }
+    its(:stdout) { should match(/"sealed": false/) }
+  end
+
+  # the agent is logged in and renders service secrets into memory
+  describe command('find /run/rb-secrets -type f -size +0c | wc -l') do
+    its(:stdout) { should_not match(/^0$/) }
+  end
+
+  # standbys answer 200 too; curl -w needs the literal %{http_code}
+  health_url = %q("$(awk -F'"' '/^api_addr/{print $2}' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true")
+  describe command("curl -s -o /dev/null -w '%{http_code}' #{health_url}") do # rubocop:disable Style/FormatStringToken
+    its(:stdout) { should eq '200' }
+  end
+
+  describe file('/etc/redborder-hub/hub.json') do
+    it { should be_symlink }
+    it { should be_linked_to '/run/rb-secrets/redborder-hub/hub.json' }
+  end
+
+  # checked on the manager, not on the machine running rspec
+  vault_pipeline = '/etc/logstash/pipelines/vault'
+  describe file("#{vault_pipeline}/01_generic.conf"), if: file(vault_pipeline).directory? do
+    it { should be_symlink }
+    it { should be_linked_to '/run/rb-secrets/logstash/vault-generic.conf' }
+  end
+end
+
+describe 'No secret values on disk' do
+  describe command('rb_openbao scan') do
+    its(:exit_status) { should eq 0 }
+    its(:stdout) { should match(/^OK: none of \d+ secret values found on disk/) }
+  end
+end
+
+describe 'Memory stays off disk' do
+  describe command('swapon --show=NAME --noheadings') do
+    its(:stdout) { should_not match(%r{^/dev/(sd|vd|nvme|mapper/rl)}) }
+  end
+
+  describe command('cryptsetup status swap') do
+    its(:stdout) { should match(/cipher:\s+aes-xts-plain64/) }
+    its(:stdout) { should match(/keysize:\s+512 \[bits\]/) }
+  end
+
+  describe command('swapon --show=NAME --noheadings | wc -l') do
+    its(:stdout) { should_not match(/^0$/) }
+  end
+
+  describe service('rb-swap') do
+    it { should be_enabled }
+  end
+
+  describe file('/proc/cmdline') do
+    its(:content) { should_not match(/resume=/) }
+  end
+
+  describe command("grep '^core_collector ' /etc/kdump.conf 2>/dev/null || echo none") do
+    its(:stdout) { should match(/\A(core_collector makedumpfile --dump-dmesg|none)\n\z/) }
+  end
+
+  describe command('find /var/crash -name vmcore -size +10M 2>/dev/null | wc -l') do
+    its(:stdout) { should match(/^0$/) }
+  end
+
+  describe command('systemd-analyze cat-config systemd/coredump.conf') do
+    its(:stdout) { should match(/^Storage=none/) }
+  end
+
+  describe command('sysctl -n fs.suid_dumpable') do
+    its(:stdout) { should eq "0\n" }
+  end
+end
