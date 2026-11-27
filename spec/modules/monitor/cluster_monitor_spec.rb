@@ -19,18 +19,18 @@ describe 'Redborder Monitor Configurations' do
   end
 end
 
-describe 'Logstash Configurations' do
-  logstash_dir = '/etc/logstash/pipelines/monitor'
+describe 'redborder-vortex Configurations' do
+  vortex_dir = '/etc/redborder-vortex/pipelines/monitor'
 
   %w[00_input.conf 01_monitor.conf 99_output.conf].each do |file_name|
-    describe file("#{logstash_dir}/#{file_name}") do
+    describe file("#{vortex_dir}/#{file_name}") do
       it { should exist }
     end
   end
 
-  describe file('/etc/logstash/pipelines.yml') do
+  describe file('/etc/redborder-vortex/pipelines.yml') do
     it { should contain 'pipeline.id: monitor-pipeline' }
-    it { should contain 'path.config: "/etc/logstash/pipelines/monitor"' }
+    it { should contain 'path.config: "/etc/redborder-vortex/pipelines/monitor"' }
   end
 end
 
