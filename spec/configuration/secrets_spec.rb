@@ -26,8 +26,9 @@ describe 'OpenBao' do
     its(:stdout) { should_not match(/^0$/) }
   end
 
-  # standbys answer 200 too
-  describe command(%q|curl -s -o /dev/null -w '%{http_code}' "$(awk -F'"' '/^api_addr/{print $2}' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true"|) do
+  # standbys answer 200 too; curl -w needs the literal %{http_code}
+  health_url = %q("$(awk -F'"' '/^api_addr/{print $2}' /etc/openbao/openbao.hcl)/v1/sys/health?standbyok=true")
+  describe command("curl -s -o /dev/null -w '%{http_code}' #{health_url}") do # rubocop:disable Style/FormatStringToken
     its(:stdout) { should eq '200' }
   end
 
@@ -36,7 +37,9 @@ describe 'OpenBao' do
     it { should be_linked_to '/run/rb-secrets/redborder-hub/hub.json' }
   end
 
-  describe file('/etc/logstash/pipelines/vault/01_generic.conf'), if: File.directory?('/etc/logstash/pipelines/vault') do
+  # checked on the manager, not on the machine running rspec
+  vault_pipeline = '/etc/logstash/pipelines/vault'
+  describe file("#{vault_pipeline}/01_generic.conf"), if: file(vault_pipeline).directory? do
     it { should be_symlink }
     it { should be_linked_to '/run/rb-secrets/logstash/vault-generic.conf' }
   end
